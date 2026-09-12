@@ -1,0 +1,28 @@
+{
+  "dataset": "",
+  "seed": null,
+  "split": {
+    "train": null,
+    "validation": null,
+    "test": null
+  },
+  "preprocessing": {
+    "lowercase": null,
+    "remove_punctuation": null,
+    "remove_stopwords": null,
+    "stemming_or_lemmatization": ""
+  },
+  "embedding": {
+    "dimension": null,
+    "learned_from_scratch": true
+  },
+  "models": {
+    "baseline": {},
+    "experimental_1": {},
+    "experimental_2": {}
+  },
+  "hardware": {
+    "device": "",
+    "gpu": ""
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "run_id": "",
+  "seed": null,
+
+  "data": {
+    "train_size": 100000,
+    "validation_size": 10000,
+    "sequence_length": null
+  },
+
+  "model": {
+    "embedding_dim": null,
+    "num_heads": null,
+    "num_transformer_blocks": null,
+    "feed_forward_dim": null,
+    "dropout": null
+  },
+
+  "training": {
+    "batch_size": null,
+    "optimizer": "",
+    "learning_rate": null,
+    "warmup_steps": null,
+    "scheduler": "",
+    "epochs": null
+  },
+
+  "generation": {
+    "method": "",
+    "temperature": null,
+    "max_new_tokens": null
+  },
+
+  "hardware": {
+    "device": "",
+    "gpu": ""
+  }
+}

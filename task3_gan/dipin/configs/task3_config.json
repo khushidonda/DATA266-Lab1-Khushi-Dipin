@@ -1,0 +1,18 @@
+{
+  "seed": null,
+  "image_size": null,
+  "generator": {},
+  "discriminator": {},
+  "training": {
+    "batch_size": null,
+    "learning_rate": null,
+    "optimizer": "",
+    "epochs": null,
+    "cycle_consistency_weight": null,
+    "identity_loss_weight": null
+  },
+  "hardware": {
+    "device": "",
+    "gpu": ""
+  }
+}
