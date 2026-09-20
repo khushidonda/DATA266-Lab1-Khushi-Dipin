@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.mypy_cache/
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Hugging Face / dataset caches
+.cache/
+**/.huggingface/
+**/hf_cache/
+
+# Raw / large dataset artifacts (never commit raw TinyStories or similar)
+**/raw/
+*.arrow
+*.parquet
+*.jsonl
+
+# Large generated array/tensor caches (not model checkpoints — those are kept)
+*.npy
+*.npz
+*.h5
+*.hdf5
+
+# Virtual environments
+.venv/
+venv/
+env/

@@ -1,6 +1,6 @@
 {
   "run_id": "",
-  "seed": null,
+  "seed": 42,
 
   "data": {
     "train_size": 100000,
