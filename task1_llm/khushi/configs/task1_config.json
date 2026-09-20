@@ -5,30 +5,31 @@
   "data": {
     "train_size": 100000,
     "validation_size": 10000,
-    "sequence_length": null
+    "sequence_length": 128
   },
 
   "model": {
-    "embedding_dim": null,
-    "num_heads": null,
-    "num_transformer_blocks": null,
-    "feed_forward_dim": null,
-    "dropout": null
+    "embedding_dim": 128,
+    "num_heads": 4,
+    "num_transformer_blocks": 4,
+    "feed_forward_dim": 256,
+    "dropout": 0.1
   },
 
   "training": {
-    "batch_size": null,
-    "optimizer": "",
-    "learning_rate": null,
-    "warmup_steps": null,
-    "scheduler": "",
-    "epochs": null
+    "batch_size": 64,
+    "optimizer": "AdamW",
+    "weight_decay": 0.01,
+    "learning_rate": 3e-4,
+    "warmup_steps": 1000,
+    "scheduler": "cosine",
+    "epochs": 10
   },
 
   "generation": {
-    "method": "",
-    "temperature": null,
-    "max_new_tokens": null
+    "method": "temperature",
+    "temperature": 0.8,
+    "max_new_tokens": 200
   },
 
   "hardware": {

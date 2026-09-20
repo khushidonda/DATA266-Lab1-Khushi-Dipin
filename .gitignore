@@ -22,7 +22,6 @@ Thumbs.db
 **/raw/
 *.arrow
 *.parquet
-*.jsonl
 
 # Large generated array/tensor caches (not model checkpoints — those are kept)
 *.npy

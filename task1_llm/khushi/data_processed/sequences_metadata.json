@@ -1,0 +1,15 @@
+{
+  "sequence_length": 128,
+  "window_size": 129,
+  "windowing_strategy": "non_overlapping_chunks_per_story",
+  "train": {
+    "num_stories_used": 99991,
+    "num_stories_skipped_too_short": 9,
+    "num_sequences": 644854
+  },
+  "validation": {
+    "num_stories_used": 9999,
+    "num_stories_skipped_too_short": 1,
+    "num_sequences": 64576
+  }
+}
