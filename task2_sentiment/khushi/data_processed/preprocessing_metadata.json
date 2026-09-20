@@ -1,0 +1,58 @@
+{
+  "dataset": "fancyzhx/yelp_polarity",
+  "seed": 42,
+  "max_sequence_length": 256,
+  "vocab_cap": 30000,
+  "final_vocab_size": 30002,
+  "counts": {
+    "train": 504000,
+    "validation": 56000,
+    "test": 38000
+  },
+  "class_balance": {
+    "train": {
+      "label0": 252000,
+      "label1": 252000
+    },
+    "validation": {
+      "label0": 28000,
+      "label1": 28000
+    },
+    "test": {
+      "label0": 19000,
+      "label1": 19000
+    }
+  },
+  "empty_after_cleaning": {
+    "train": 24,
+    "validation": 8,
+    "test": 0
+  },
+  "unk_rate_effective": {
+    "validation": {
+      "unk_count": 56143,
+      "total_tokens": 3805267,
+      "pct": 1.475402383065367
+    },
+    "test": {
+      "unk_count": 37175,
+      "total_tokens": 2584199,
+      "pct": 1.4385502045314622
+    }
+  },
+  "encoded_shapes": {
+    "train_input_ids": [
+      504000,
+      256
+    ],
+    "validation_input_ids": [
+      56000,
+      256
+    ],
+    "test_input_ids": [
+      38000,
+      256
+    ]
+  },
+  "train_validation_overlap": 0
+}
