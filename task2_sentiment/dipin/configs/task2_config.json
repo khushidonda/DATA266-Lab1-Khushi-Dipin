@@ -1,28 +1,93 @@
 {
-  "dataset": "",
-  "seed": null,
+  "member": "dipin",
+  "dataset": "fancyzhx/yelp_polarity",
+  "seed": 42,
   "split": {
-    "train": null,
-    "validation": null,
-    "test": null
+    "train": 0.9,
+    "validation": 0.1,
+    "test": "official_38000_untouched",
+    "method": "stratified per-class shuffle of the official 560k train pool (same protocol and seed as Khushi, so validation/test sets are identical across the team)"
   },
   "preprocessing": {
-    "lowercase": null,
-    "remove_punctuation": null,
-    "remove_stopwords": null,
-    "stemming_or_lemmatization": ""
+    "unescape_literal_newlines": true,
+    "lowercase": true,
+    "expand_negation_contractions": true,
+    "remove_punctuation": true,
+    "remove_stopwords": true,
+    "stopword_source": "nltk_english",
+    "negation_exceptions": ["no", "not", "nor", "never", "none", "nobody", "nothing", "neither", "nowhere", "cannot", "without"],
+    "stemming_or_lemmatization": "wordnet_lemmatization_noun_then_verb",
+    "min_token_freq": 3,
+    "vocab_cap": 40000,
+    "max_sequence_length": 200,
+    "truncation_side": "head_and_tail",
+    "head_tail_keep_tail": 50,
+    "pad_token": "<PAD>",
+    "unk_token": "<UNK>",
+    "pad_id": 0,
+    "unk_id": 1
   },
   "embedding": {
-    "dimension": null,
-    "learned_from_scratch": true
+    "dimension": 200,
+    "learned_from_scratch": true,
+    "pretrained": false
+  },
+  "training": {
+    "batch_size": 256,
+    "optimizer": "AdamW",
+    "learning_rate": 0.002,
+    "weight_decay": 0.0001,
+    "scheduler": "linear_warmup_then_cosine",
+    "warmup_fraction": 0.05,
+    "epochs": 4,
+    "gradient_clip_max_norm": 1.0,
+    "loss": "BCEWithLogitsLoss",
+    "early_stopping_metric": "validation_macro_f1",
+    "early_stopping_patience": 2,
+    "num_workers": 2
   },
   "models": {
-    "baseline": {},
-    "experimental_1": {},
-    "experimental_2": {}
+    "baseline": {
+      "architecture": "lstm_last_hidden",
+      "embedding_dim": 200,
+      "hidden_size": 128,
+      "num_layers": 1,
+      "bidirectional": false,
+      "pooling": "last_hidden_state_at_true_length",
+      "embedding_dropout": 0.2,
+      "dropout": 0.3,
+      "output": "single_logit_sigmoid"
+    },
+    "experimental_1": {
+      "architecture": "stacked_bilstm_last_hidden",
+      "embedding_dim": 200,
+      "hidden_size": 128,
+      "num_layers": 2,
+      "bidirectional": true,
+      "pooling": "concat_final_forward_backward_hidden_top_layer",
+      "embedding_dropout": 0.2,
+      "inter_layer_dropout": 0.3,
+      "dropout": 0.3,
+      "output": "single_logit_sigmoid"
+    },
+    "experimental_2": {
+      "architecture": "stacked_bilstm_additive_attention",
+      "embedding_dim": 200,
+      "hidden_size": 128,
+      "num_layers": 2,
+      "bidirectional": true,
+      "pooling": "additive_attention_masked_over_non_pad",
+      "attention_dim": 128,
+      "embedding_dropout": 0.2,
+      "inter_layer_dropout": 0.3,
+      "dropout": 0.3,
+      "output": "single_logit_sigmoid"
+    }
   },
-  "hardware": {
-    "device": "",
-    "gpu": ""
+  "evaluation": {
+    "decision_threshold": 0.5,
+    "ece_bins": 15,
+    "bootstrap_samples": 1000,
+    "slices": ["raw_length_short", "raw_length_medium", "raw_length_long", "contains_negation", "contains_contrast_word", "truncated", "high_unk_rate"]
   }
 }

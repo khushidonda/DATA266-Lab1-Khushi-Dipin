@@ -1,0 +1,3 @@
+outputs/smoke/
+checkpoints/*_smoke.pt
+outputs/raw_logs/*_smoke_*.jsonl
