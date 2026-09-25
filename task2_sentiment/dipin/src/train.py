@@ -23,7 +23,10 @@ from models import build_model, count_parameters
 
 TASK_DIR = Path(__file__).resolve().parent.parent
 CKPT_DIR = TASK_DIR / "checkpoints"
-LOG_DIR = TASK_DIR / "outputs" / "raw_logs"
+REPO_DIR = TASK_DIR.parent.parent
+# Real runs log straight into the team evidence folder; smoke runs stay in git-ignored outputs/smoke/.
+LOG_DIR = REPO_DIR / "reproducibility" / "raw_logs" / "dipin"
+SMOKE_LOG_DIR = TASK_DIR / "outputs" / "smoke" / "raw_logs"
 
 
 def get_device():
@@ -86,9 +89,9 @@ def make_loader(ids, lengths, labels, batch_size, shuffle, seed, num_workers=0):
 
 
 class RawLogger:
-    def __init__(self, run_id):
-        LOG_DIR.mkdir(parents=True, exist_ok=True)
-        self.path = LOG_DIR / f"{run_id}.jsonl"
+    def __init__(self, run_id, log_dir=LOG_DIR):
+        log_dir.mkdir(parents=True, exist_ok=True)
+        self.path = log_dir / f"{run_id}.jsonl"
         self.f = open(self.path, "a", buffering=1)
 
     def log(self, event, **kw):
@@ -130,7 +133,7 @@ def train_model(name, cfg, data, vocab_size, device, epochs=None, tag=""):
     np.random.seed(cfg["seed"])
 
     run_id = f"task2_{name}{tag}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-    logger = RawLogger(run_id)
+    logger = RawLogger(run_id, SMOKE_LOG_DIR if "smoke" in tag else LOG_DIR)
     hw = hardware_info(device)
 
     model = build_model(name, cfg, vocab_size).to(device)
@@ -218,7 +221,7 @@ def train_model(name, cfg, data, vocab_size, device, epochs=None, tag=""):
                "best_epoch": max(history, key=lambda r: r["val_macro_f1"])["epoch"],
                "epochs_run": len(history), "training_seconds": train_seconds,
                "train_examples_per_sec": n_seen / train_seconds, **mem, "hardware": hw,
-               "checkpoint": str(ckpt_path.relative_to(TASK_DIR)), "raw_log": str(logger.path.relative_to(TASK_DIR)),
+               "checkpoint": str(ckpt_path.relative_to(REPO_DIR)), "raw_log": str(logger.path.relative_to(REPO_DIR)),
                "history": history}
     # Attach run metadata to the best checkpoint so it is self-describing.
     ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)

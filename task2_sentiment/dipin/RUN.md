@@ -24,12 +24,13 @@ This executes the notebook in place, so every output is saved inside `task2_dipi
 | Output | Location |
 |---|---|
 | Model weights | `checkpoints/{baseline,experimental_1,experimental_2}.pt` |
-| Raw training logs (unedited JSONL) | `outputs/raw_logs/` |
+| Raw training logs (unedited JSONL) | `reproducibility/raw_logs/dipin/` |
 | All metrics, one file | `metrics_report.csv` |
 | Full run summary (history, hardware, metrics) | `outputs/run_summary.json` |
 | Plots (curves, confusion, ROC/PR/calibration, EDA) | `outputs/plots/`, `outputs/eda/` |
 | Test predictions | `outputs/predictions/` |
 | 20 error-review candidates | `outputs/error_review/` |
-| pip freeze | `outputs/environment.txt` |
+| pip freeze | `outputs/environment.txt`, `reproducibility/manifests/dipin/environment_task2.txt` |
+| Run manifest (run ID → log → checkpoint → metrics) | `reproducibility/manifests/dipin/task2_manifest.json` |
 
-Copy `checkpoints/` and `outputs/` off the lab machine as soon as the run finishes (commit and push them).
+Copy `checkpoints/`, `outputs/` and `reproducibility/*/dipin/` off the lab machine as soon as the run finishes (commit and push them).
