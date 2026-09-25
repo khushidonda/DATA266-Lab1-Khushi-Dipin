@@ -1,0 +1,182 @@
+{
+  "run_id": "task1_full_20260925_204011",
+  "primary_checkpoint": {
+    "selection": "lowest validation CE in the raw log",
+    "epoch": 9,
+    "path": "/workspace/task1_llm/khushi/checkpoints/task1_full_20260925_204011/epoch_9.pt",
+    "sha256": "5bd9af9bde778b4916696e18ecb435df040f9750037e7fb9918fa59ef04d398b",
+    "sha256_matches_raw_log": true,
+    "logged_val_loss": 0.8642926901372148,
+    "is_final": true,
+    "config_matches_current_config": true
+  },
+  "final_checkpoint": {
+    "epoch": 9,
+    "path": "/workspace/task1_llm/khushi/checkpoints/task1_full_20260925_204011/epoch_9.pt",
+    "sha256": "5bd9af9bde778b4916696e18ecb435df040f9750037e7fb9918fa59ef04d398b",
+    "same_as_primary": true,
+    "logged_val_loss": 0.8642926901372148,
+    "validation": "same as primary checkpoint"
+  },
+  "validation": {
+    "ce_nats": 0.8642926901372148,
+    "perplexity": 2.3733268147009032,
+    "bpc": 1.2469107779375412,
+    "top1_accuracy": 0.727477724890052,
+    "tokens": 8265728,
+    "seconds": 1.953140230000372,
+    "logged_val_loss_same_epoch": 0.8642926901372148,
+    "matches_training_log": true
+  },
+  "train_eval_mode": {
+    "ce_nats": 0.8638971224188982,
+    "perplexity": 2.372388188885268,
+    "bpc": 1.2463400943519902,
+    "top1_accuracy": 0.7275558692355168,
+    "tokens": 82541312,
+    "seconds": 20.962764751999657
+  },
+  "generalization_gap": {
+    "formula": "generalization_gap = validation_eval_ce - training_eval_ce",
+    "definition": "both cross-entropies in eval mode (no dropout) over the full split, from the primary checkpoint, in nats per character; positive means validation CE is above training CE",
+    "validation_eval_ce": 0.8642926901372148,
+    "training_eval_ce": 0.8638971224188982,
+    "value_nats": 0.00039556771831661397
+  },
+  "generation": {
+    "settings": {
+      "method": "temperature",
+      "temperature": 0.8,
+      "max_new_tokens": 200,
+      "prompts": [
+        "Once upon a time",
+        "One day,",
+        "Lily and Ben",
+        "The little bird",
+        "Tom was sad because"
+      ],
+      "samples_per_prompt": 10,
+      "seed": 42,
+      "batch_size": 1
+    },
+    "num_samples": 50,
+    "new_tokens_total": 10000,
+    "seconds_total": 17.654870021999614,
+    "tokens_per_sec": 566.4159513799348,
+    "primary_character_level": {
+      "distinct_1": 0.0051,
+      "distinct_2": 0.04361809045226131,
+      "distinct_3": 0.1591919191919192,
+      "repeated_4gram_rate": 0.13086294416243655
+    },
+    "secondary_word_level": {
+      "distinct_1": 0.23945710130877362,
+      "distinct_2": 0.6462990561351217,
+      "distinct_3": 0.8568517575140092,
+      "repeated_4gram_rate": 0.0020256410256410274,
+      "words_total": 2063,
+      "unseen_word_share": 0.011148812409112942
+    }
+  },
+  "training_run": {
+    "parameter_count": 574830,
+    "total_steps": 100760,
+    "training_tokens_per_sec": 307816.5924640004,
+    "validation_tokens_per_sec": 3674552.423695469,
+    "tokens_per_sec_note": "measured by the training loop; includes the per-step gradient-norm computation and per-step raw-log writes",
+    "grad_norm": {
+      "min": 0.13745667527913252,
+      "p50": 0.41332412950389974,
+      "mean": 0.40758857808407895,
+      "p99": 0.46355282825803806,
+      "max": 1.4374090811834899,
+      "max_step": 126,
+      "final_epoch_mean": 0.43400860833560356,
+      "clipping": "none (reported only)"
+    },
+    "nan_count": 0,
+    "peak_gpu_memory_allocated_bytes": 465645568,
+    "peak_gpu_memory_reserved_bytes": 503316480,
+    "total_training_time_seconds": 2705.139118,
+    "best_epoch_by_val_loss": 9,
+    "final_epoch_logged_train_ce": 0.9404142538426461,
+    "final_epoch_logged_train_ce_note": "training-dynamics statistic: mean of the per-step training losses over the last epoch, dropout on (not used for the gap)",
+    "per_epoch_logged": [
+      {
+        "epoch": 0,
+        "train_loss": 1.5118057939943788,
+        "val_loss": 1.0431043363893469
+      },
+      {
+        "epoch": 1,
+        "train_loss": 1.0775008797349794,
+        "val_loss": 0.9534726401622988
+      },
+      {
+        "epoch": 2,
+        "train_loss": 1.0173435675608067,
+        "val_loss": 0.9183389272160526
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.9887295810061345,
+        "val_loss": 0.8985053412505491
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.9710307021009018,
+        "val_loss": 0.8854493341077307
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.9591014228580773,
+        "val_loss": 0.8767458222902448
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.9507136431512685,
+        "val_loss": 0.870825913072932
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.9451023859843322,
+        "val_loss": 0.8661954785125816
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.9418605734143478,
+        "val_loss": 0.864607528959677
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.9404142538426461,
+        "val_loss": 0.8642926901372148
+      }
+    ]
+  },
+  "definitions": {
+    "cross_entropy": "mean next-character NLL in nats, token-weighted, eval mode, all sequences of the split",
+    "perplexity": "exp(CE)",
+    "bpc": "CE / ln 2",
+    "generalization_gap": "validation_eval_ce - training_eval_ce (both eval mode, full split, same checkpoint)",
+    "top1_accuracy": "share of positions where argmax logits == next character",
+    "distinct_n": "unique n-grams / all n-grams pooled over all continuations (prompt excluded); primary over characters, secondary over words",
+    "repeated_4gram_rate": "per continuation 1 - unique 4-grams / all 4-grams, averaged over continuations; primary over characters, secondary over words",
+    "word_tokenizer": "regex [a-z0-9']+ on lowercased text (secondary diagnostics only)",
+    "unseen_word_share": "share of generated words that never occur in the training split",
+    "generation_tokens_per_sec": "new characters / wall-clock seconds, batch size 1, CUDA-synchronized"
+  },
+  "provenance": {
+    "raw_log": "/workspace/reproducibility/raw_logs/khushi/task1_full_20260925_204011.jsonl",
+    "raw_log_sha256": "aa65db75d5b96f08bbb43cd55760420fc09d357631661465324933fdd61109b4",
+    "evaluated_at_utc": "2026-09-25T21:30:36+00:00",
+    "eval_code_git_commit": "234cfc250ea13612b19ec20dd566fe718462182e",
+    "eval_script_sha256": "30e3f5c85f755f4269876f67bd8b92f114052debf718d8c6d87f9a3ab9543f2d",
+    "environment": {
+      "torch": "2.14.0+cu130",
+      "cuda": "13.0",
+      "gpu": "NVIDIA GeForce RTX 5090"
+    },
+    "eval_batch_size": 64
+  }
+}

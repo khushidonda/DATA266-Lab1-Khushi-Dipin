@@ -1,10 +1,13 @@
 """Task 1 (Phases 6-7): metrics, generations and failure-case candidates for a finished run.
 
     python evaluate_task1.py --run-id task1_full_20260925_204011
+    python evaluate_task1.py --run-id task1_full_20260925_204011 --rebuild-candidates
 
 Primary checkpoint: the epoch with the lowest validation cross-entropy in the raw
 log (override with --checkpoint final|<epoch>). The final checkpoint's identity and
-validation result are always reported as well.
+validation result are always reported as well. --rebuild-candidates only rewrites
+failure_candidates.md from an existing evaluation's generations.jsonl (no model and
+no data; metrics.json and the generations are not touched).
 
 Read-only on the run's raw log, checkpoints, config and data; writes only to
 task1_llm/khushi/outputs/<run_id>/eval_epoch_<N>/ and refuses to overwrite it:
@@ -159,20 +162,36 @@ def fence(text):
 
 
 def candidates_markdown(samples, run_id, epoch):
+    max_new = max(s["new_tokens"] for s in samples)
+    unseen_caveat = (f"Caveat: every sample stops at exactly {max_new} new characters, so its last word can be cut "
+                     "off mid-word, and such fragments count as unseen words. This inflates this secondary "
+                     "diagnostic; do not use it as a primary failure-selection criterion.")
     rankings = (
-        ("Highest character-level repeated 4-gram rate (primary diversity metric)", "repeated_4gram_rate_char", True),
-        ("Highest word-level repeated 4-gram rate (secondary diagnostic)", "repeated_4gram_rate_word", True),
-        ("Highest share of words never seen in the training split (secondary diagnostic)", "unseen_word_share", True),
-        ("Most characters outside printable ASCII", "non_ascii_chars", True),
+        ("Highest character-level repeated 4-gram rate (primary diversity metric)", "repeated_4gram_rate_char", None),
+        ("Highest word-level repeated 4-gram rate (secondary diagnostic)", "repeated_4gram_rate_word", None),
+        ("Highest share of words never seen in the training split (secondary diagnostic)", "unseen_word_share",
+         unseen_caveat),
+        ("Most characters outside printable ASCII", "non_ascii_chars", None),
     )
     lines = [f"# Task 1 failure-case candidates: {run_id}, epoch {epoch} checkpoint", "",
              "Samples ranked by objective per-sample statistics only. No failure types are assigned here: "
              "read the samples (all of them are in generations.txt), then choose and categorize three cases "
              "yourself.", ""]
-    for title, key, descending in rankings:
-        valid = [s for s in samples if not math.isnan(s["stats"][key])]
-        ranked = sorted(valid, key=lambda s: s["stats"][key], reverse=descending)[:TOP_K_CANDIDATES]
+    for title, key, note in rankings:
         lines += [f"## {title}", ""]
+        if note:
+            lines += [note, ""]
+        valid = [s for s in samples if not math.isnan(s["stats"][key])]
+        if len({s["stats"][key] for s in valid}) <= 1:
+            # Every sample scores the same, so any "top 3" would just be arbitrary ties.
+            if key == "non_ascii_chars" and all(s["stats"][key] == 0 for s in valid):
+                lines += ["All generated samples contained only printable ASCII characters; no candidates "
+                          "identified for this criterion.", ""]
+            else:
+                lines += [f"All {len(valid)} samples have the same value for this criterion, so no meaningful "
+                          "ranking exists; no candidates listed.", ""]
+            continue
+        ranked = sorted(valid, key=lambda s: s["stats"][key], reverse=True)[:TOP_K_CANDIDATES]
         for s in ranked:
             st = s["stats"]
             lines.append(f"**Sample {s['id']}** (prompt {s['prompt']!r}): `{key}` = {st[key]:.3f}; "
@@ -186,6 +205,19 @@ def candidates_markdown(samples, run_id, epoch):
     return "\n".join(lines) + "\n"
 
 
+def rebuild_candidates(out_dir, run_id, epoch):
+    """Rewrites failure_candidates.md from a finished evaluation's saved samples and statistics."""
+    path = out_dir / "generations.jsonl"
+    if not path.is_file():
+        raise SystemExit(f"{path} not found; run the full evaluation first.")
+    with open(path, encoding="utf-8") as f:
+        samples = [json.loads(line) for line in f]
+    with open(out_dir / "failure_candidates.md", "w", encoding="utf-8") as f:
+        f.write(candidates_markdown(samples, run_id, epoch))
+    print(f"Rebuilt {out_dir / 'failure_candidates.md'} from {len(samples)} saved samples "
+          "(metrics.json and generations untouched)")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Evaluate a finished Task 1 run.")
     parser.add_argument("--run-id", required=True)
@@ -194,7 +226,19 @@ def main():
     parser.add_argument("--prompts", nargs="+", default=DEFAULT_PROMPTS)
     parser.add_argument("--samples-per-prompt", type=int, default=DEFAULT_SAMPLES_PER_PROMPT)
     parser.add_argument("--gen-seed", type=int, help="sampling seed (default: the config seed)")
+    parser.add_argument("--rebuild-candidates", action="store_true",
+                        help="only rewrite failure_candidates.md from this evaluation's saved generations.jsonl")
     args = parser.parse_args()
+
+    log_path = RAW_LOG_DIR / f"{args.run_id}.jsonl"
+    by_type = load_log(log_path)
+    epoch = resolve_epoch(args.checkpoint, by_type)
+    out_dir = OUTPUTS_DIR / args.run_id / f"eval_epoch_{epoch}"
+    if args.rebuild_candidates:
+        rebuild_candidates(out_dir, args.run_id, epoch)
+        return
+    if out_dir.exists():
+        raise SystemExit(f"{out_dir} already exists; refusing to overwrite it.")
 
     if not torch.cuda.is_available():
         raise SystemExit("CUDA is not available.")
@@ -205,19 +249,13 @@ def main():
     batch_size = cfg["training"]["batch_size"]
     gen_seed = cfg["seed"] if args.gen_seed is None else args.gen_seed
 
-    log_path = RAW_LOG_DIR / f"{args.run_id}.jsonl"
-    by_type = load_log(log_path)
     run_start, run_end = by_type["run_start"][0], by_type["run_end"][0]
     epoch_end = {r["epoch"]: r for r in by_type["epoch_end"]}
     saved = {r["epoch"]: r for r in by_type["checkpoint_saved"]}
-    epoch = resolve_epoch(args.checkpoint, by_type)
     final_epoch = run_start["epochs"] - 1
     for e in (epoch, final_epoch):
         if e not in saved:
             raise SystemExit(f"No checkpoint_saved record for epoch {e} in the raw log.")
-    out_dir = OUTPUTS_DIR / args.run_id / f"eval_epoch_{epoch}"
-    if out_dir.exists():
-        raise SystemExit(f"{out_dir} already exists; refusing to overwrite it.")
 
     model, checkpoint, checkpoint_path, checkpoint_sha = load_verified(saved[epoch], device)
     with open(TOKENIZER_PATH, encoding="utf-8") as f:
@@ -373,7 +411,9 @@ def main():
             "repeated_4gram_rate": "per continuation 1 - unique 4-grams / all 4-grams, averaged over "
                                    "continuations; primary over characters, secondary over words",
             "word_tokenizer": f"regex {WORD_RE.pattern} on lowercased text (secondary diagnostics only)",
-            "unseen_word_share": "share of generated words that never occur in the training split",
+            "unseen_word_share": "share of generated words that never occur in the training split (secondary "
+                                 "diagnostic; the fixed-length cutoff can truncate a sample's last word, which "
+                                 "inflates this share)",
             "generation_tokens_per_sec": "new characters / wall-clock seconds, batch size 1, CUDA-synchronized",
         },
         "provenance": {

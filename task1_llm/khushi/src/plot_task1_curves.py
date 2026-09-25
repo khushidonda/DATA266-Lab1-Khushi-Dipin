@@ -1,9 +1,11 @@
 """Task 1 (Phase 8): loss curves from a finished run's raw JSONL log.
 
     python plot_task1_curves.py --run-id task1_full_20260925_204011
+    python plot_task1_curves.py --run-id task1_full_20260925_204011 --dynamics-only
 
 Reads reproducibility/raw_logs/khushi/<run_id>.jsonl (read-only) and writes to
-task1_llm/khushi/outputs/<run_id>/curves/ (refuses to overwrite an existing folder):
+task1_llm/khushi/outputs/<run_id>/curves/ (refuses to overwrite an existing folder;
+--dynamics-only re-renders just training_dynamics.png in an existing folder):
   loss_curves.png        training vs validation cross-entropy per epoch, one axis
   loss_curves.csv        the per-epoch numbers behind that plot, plus epoch timing/throughput
   training_dynamics.png  per-step training loss, gradient norm and learning rate (three panels)
@@ -118,8 +120,7 @@ def plot_steps(steps, run_start, out_png, run_id):
     panels = (
         (axes[0], loss, "Training loss per step (nats per character)", True),
         (axes[1], grad_norm, "Gradient norm per step (global L2, not clipped)", True),
-        (axes[2], lr, f"Learning rate applied per step ({warmup:,}-step linear warmup, then cosine decay "
-                      f"to 0 at step {run_start['total_steps']:,})", False),
+        (axes[2], lr, f"Learning rate per step: {warmup:,}-step linear warmup, then cosine decay to 0", False),
     )
     for ax, y, title, smooth in panels:
         for boundary in range(steps_per_epoch, int(s[-1]) + 1, steps_per_epoch):
@@ -155,10 +156,20 @@ def main():
     parser.add_argument("--log", type=Path, help="default: reproducibility/raw_logs/khushi/<run_id>.jsonl")
     parser.add_argument("--out-dir", type=Path, help="default: task1_llm/khushi/outputs/<run_id>/curves")
     parser.add_argument("--allow-incomplete", action="store_true", help="preview a run that has not finished")
+    parser.add_argument("--dynamics-only", action="store_true",
+                        help="re-render only training_dynamics.png in an existing curves folder")
     args = parser.parse_args()
 
     log_path = args.log or RAW_LOG_DIR / f"{args.run_id}.jsonl"
     out_dir = args.out_dir or OUTPUTS_DIR / args.run_id / "curves"
+    if args.dynamics_only:
+        if not out_dir.is_dir():
+            raise SystemExit(f"{out_dir} does not exist; run without --dynamics-only first.")
+        by_type = load_log(log_path, args.allow_incomplete)
+        apply_style()
+        plot_steps(by_type["train_step"], by_type["run_start"][0], out_dir / "training_dynamics.png", args.run_id)
+        print(f"Re-rendered {out_dir / 'training_dynamics.png'} (CSVs and loss_curves.png untouched)")
+        return
     if out_dir.exists():
         raise SystemExit(f"{out_dir} already exists; refusing to overwrite it.")
     by_type = load_log(log_path, args.allow_incomplete)

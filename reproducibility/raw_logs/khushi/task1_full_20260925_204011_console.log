@@ -1,0 +1,17 @@
+Run ID: task1_full_20260925_204011
+Raw log: /workspace/reproducibility/raw_logs/khushi/task1_full_20260925_204011.jsonl
+Checkpoints: /workspace/task1_llm/khushi/checkpoints/task1_full_20260925_204011
+Parameter count: 574,830
+Epoch 0: train_loss=1.5118 val_loss=1.0431 (269.7s)
+Epoch 1: train_loss=1.0775 val_loss=0.9535 (270.1s)
+Epoch 2: train_loss=1.0173 val_loss=0.9183 (271.3s)
+Epoch 3: train_loss=0.9887 val_loss=0.8985 (280.8s)
+Epoch 4: train_loss=0.9710 val_loss=0.8854 (265.4s)
+Epoch 5: train_loss=0.9591 val_loss=0.8767 (267.6s)
+Epoch 6: train_loss=0.9507 val_loss=0.8708 (268.7s)
+Epoch 7: train_loss=0.9451 val_loss=0.8662 (267.7s)
+Epoch 8: train_loss=0.9419 val_loss=0.8646 (268.4s)
+Epoch 9: train_loss=0.9404 val_loss=0.8643 (274.3s)
+Total training time: 2705.1s
+Run summary: /workspace/task1_llm/khushi/outputs/task1_full_20260925_204011/run_summary.json
+Run task1_full_20260925_204011 finished.

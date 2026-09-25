@@ -1,0 +1,68 @@
+{
+  "run_id": "task1_full_20260925_204011",
+  "mode": "full",
+  "raw_log": "/workspace/reproducibility/raw_logs/khushi/task1_full_20260925_204011.jsonl",
+  "checkpoint_dir": "/workspace/task1_llm/khushi/checkpoints/task1_full_20260925_204011",
+  "history": [
+    {
+      "epoch": 0,
+      "train_loss": 1.5118057939943788,
+      "val_loss": 1.0431043363893469,
+      "seconds": 269.711978
+    },
+    {
+      "epoch": 1,
+      "train_loss": 1.0775008797349794,
+      "val_loss": 0.9534726401622988,
+      "seconds": 270.091899
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.0173435675608067,
+      "val_loss": 0.9183389272160526,
+      "seconds": 271.266355
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.9887295810061345,
+      "val_loss": 0.8985053412505491,
+      "seconds": 280.775522
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.9710307021009018,
+      "val_loss": 0.8854493341077307,
+      "seconds": 265.38298
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.9591014228580773,
+      "val_loss": 0.8767458222902448,
+      "seconds": 267.631363
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.9507136431512685,
+      "val_loss": 0.870825913072932,
+      "seconds": 268.736211
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.9451023859843322,
+      "val_loss": 0.8661954785125816,
+      "seconds": 267.704664
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.9418605734143478,
+      "val_loss": 0.864607528959677,
+      "seconds": 268.372388
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.9404142538426461,
+      "val_loss": 0.8642926901372148,
+      "seconds": 274.250487
+    }
+  ]
+}

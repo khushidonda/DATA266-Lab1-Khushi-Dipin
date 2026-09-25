@@ -1,0 +1,147 @@
+# DATA266 Lab 1 - Khushi - Task 1 GPU environment
+# Recorded 2026-09-25 on the lab machine that produced run task1_full_20260925_204011.
+# Every value was read from this machine (Windows host queries, nvidia-smi, docker, and
+# inside the image). Nothing here is copied from another machine.
+
+## Host
+machine:             Alienware Area-51 AAT2250 (hostname ADS-A51-836-10)
+os:                  Microsoft Windows 11 Pro 10.0.26200 (build 26200), 64-bit
+cpu:                 Intel(R) Core(TM) Ultra 9 285K, 24 cores / 24 logical processors
+ram:                 63.5 GiB (68,135,153,664 bytes)
+gpu:                 NVIDIA GeForce RTX 5090, 32,607 MiB, compute capability 12.0 (sm_120)
+nvidia driver:       610.60 (driver model WDDM), CUDA UMD version 13.3
+docker:              Docker Desktop 4.91.0 (239619), engine 29.8.0, WSL2 backend
+wsl:                 2.5.9.0, kernel 6.6.87.2-microsoft-standard-WSL2
+docker vm resources: 24 CPUs, 33,363,746,816 bytes RAM
+
+## Image used for the smoke test, full run, evaluation and plots
+image:     khushi-task1-gpu:torch2.14-cu130
+image id:  sha256:f1772b5467574f78e175cbc4f67f0e74e81a87ba77d872cf97829cc1b1745ba7
+base:      pytorch/pytorch:2.14.0-cuda13.0-cudnn9-runtime@sha256:9c99fafa01edfaa3d16da8c209b38b5970bb6fd6e72725ef60efc901489f70c6
+recipe:    task1_gpu.Dockerfile (this folder)
+not used:  gdevakumar/pytorch:latest @sha256:98a489e952cce30f86816be8111f4b800298591ee19258f7d3b54fc8c4ae1fea
+           (lab PyTorch.bat image; torch 2.1.2+cu121, kernels up to sm_90, fails on sm_120)
+
+## Software inside the image
+python:                    3.12.3
+pytorch:                   2.14.0+cu130
+cuda runtime (torch):      13.0
+cudnn:                     9.24.0 (torch.backends.cudnn.version() = 92400)
+torch cuda arch list:      sm_75, sm_80, sm_86, sm_90, sm_100, sm_120
+float32 matmul precision:  highest
+gpu memory visible:        34,190,458,880 bytes
+platform:                  Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39
+key libraries:             numpy 2.5.2, datasets 5.0.1, huggingface_hub 1.33.0, pyarrow 25.0.1,
+                           pandas 3.0.6, matplotlib 3.11.2
+
+## Dataset source
+roneneldan/TinyStories, Hugging Face revision f54c09fd23315a6f9c86f9dc80f725de7d8f9c64
+(config "default", train split 2,119,719 stories from data/train-0000{0,1,2,3}-of-00004-*.parquet).
+Cached in the Docker volume tinystories-hf-cache, never inside the repo.
+
+## pip freeze (inside khushi-task1-gpu:torch2.14-cu130; identical to /opt/pip_freeze_at_build.txt)
+aiohappyeyeballs==2.7.1
+aiohttp==3.14.3
+aiosignal==1.4.0
+anyio==4.15.1
+asttokens==3.0.2
+attrs==26.1.0
+build==1.6.0
+certifi==2026.7.22
+charset-normalizer==3.5.1
+click==8.5.0
+cmake==4.4.3
+contourpy==1.4.0
+cuda-bindings==13.3.1
+cuda-pathfinder==1.6.0
+cuda-toolkit==13.0.3.0
+cycler==0.12.1
+datasets==5.0.1
+dill==0.4.1
+dnspython==2.8.0
+executing==2.2.1
+expecttest==0.3.0
+filelock==3.32.5
+fonttools==4.66.0
+frozenlist==1.8.0
+fsspec==2026.6.0
+h11==0.16.0
+hf-xet==1.6.0
+httpcore==1.0.9
+httpx==0.28.1
+huggingface_hub==1.33.0
+hypothesis==6.167.1
+idna==3.19
+importlib_metadata==9.0.1
+ipython==9.17.1
+ipython_pygments_lexers==1.1.1
+jedi==0.20.0
+Jinja2==3.1.6
+kiwisolver==1.5.1
+lintrunner==0.13.1
+MarkupSafe==3.0.3
+matplotlib==3.11.2
+matplotlib-inline==0.2.2
+mpmath==1.3.0
+multidict==6.9.1
+multiprocess==0.70.19
+networkx==3.6.1
+ninja==1.13.2
+numpy==2.5.2
+nvidia-cublas==13.1.1.3
+nvidia-cuda-cupti==13.0.85
+nvidia-cuda-nvrtc==13.0.88
+nvidia-cuda-runtime==13.0.96
+nvidia-cudnn-cu13==9.24.0.43
+nvidia-cufft==12.0.0.61
+nvidia-cufile==1.15.1.6
+nvidia-curand==10.4.0.35
+nvidia-cusolver==12.0.4.66
+nvidia-cusparse==12.6.3.3
+nvidia-cusparselt-cu13==0.8.1
+nvidia-nccl-cu13==2.30.7
+nvidia-nvjitlink==13.3.33
+nvidia-nvshmem-cu13==3.4.5
+nvidia-nvtx==13.0.85
+optree==0.20.0
+packaging==26.3
+pandas==3.0.6
+parso==0.8.7
+pathspec==1.1.1
+pexpect==4.9.0
+pillow==12.3.0
+prompt_toolkit==3.0.53
+propcache==0.5.4
+psutil==7.2.2
+ptyprocess==0.7.0
+pure_eval==0.2.3
+pyarrow==25.0.1
+Pygments==2.21.0
+pyparsing==3.3.3
+pyproject_hooks==1.2.0
+python-dateutil==2.9.0.post0
+python-etcd==0.4.5
+PyYAML==6.0.3
+requests==2.34.2
+scikit_build_core==1.0.3
+setuptools==81.0.0
+six==1.17.0
+sortedcontainers==2.4.0
+spin==0.18
+stack-data==0.6.3
+sympy==1.14.0
+torch==2.14.0+cu130
+torchaudio==2.11.0+cu130
+torchelastic==0.2.2
+torchvision==0.29.0+cu130
+tqdm==4.70.1
+traitlets==5.16.1
+triton==3.8.0
+typing_extensions==4.16.0
+urllib3==2.7.0
+uv==0.12.9
+wcwidth==0.8.3
+wheel==0.48.0
+xxhash==4.0.1
+yarl==1.25.1
+zipp==4.1.0
