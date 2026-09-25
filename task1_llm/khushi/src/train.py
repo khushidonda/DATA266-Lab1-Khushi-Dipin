@@ -10,10 +10,14 @@ Running this file directly does NOT start the full 10-epoch training run.
 hardware.device/hardware.gpu are intentionally left blank in the config
 until that real run happens. See check_pipeline.py for lightweight wiring
 checks and smoke_test.py for a tiny real run on a subset of the data.
+The GPU runs go through run_task1.py (seeding, run ID, environment logging)
+and smoke_test_gpu.py (short GPU smoke run of that same path).
 """
 
+import hashlib
 import json
 import math
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -45,17 +49,32 @@ class RawLogger:
     """Appends one JSON record per line to a uniquely-named, timestamped
     log file. The file is opened in append mode only and is never
     truncated or rewritten, so raw logs from a run are preserved exactly
-    as produced."""
+    as produced.
 
-    def __init__(self, log_dir=RAW_LOG_DIR):
+    Every record gets a wall-clock "time" (with UTC offset). When run_id is
+    given (run_task1.py full/smoke runs), the file is named <run_id>.jsonl,
+    every record also carries the run_id, and an existing log with that
+    name is never reused."""
+
+    def __init__(self, log_dir=RAW_LOG_DIR, run_id=None):
         log_dir = Path(log_dir)
         log_dir.mkdir(parents=True, exist_ok=True)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-        self.path = log_dir / f"task1_train_log_{timestamp}.jsonl"
+        if run_id is None:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+            self.path = log_dir / f"task1_train_log_{timestamp}.jsonl"
+        else:
+            self.path = log_dir / f"{run_id}.jsonl"
+        if self.path.exists():
+            raise FileExistsError(f"Raw log already exists, refusing to reuse it: {self.path}")
+        self.run_id = run_id
 
     def log(self, record):
+        stamped = {"time": datetime.now().astimezone().isoformat(timespec="milliseconds")}
+        if self.run_id is not None:
+            stamped["run_id"] = self.run_id
+        stamped.update(record)
         with open(self.path, "a") as f:
-            f.write(json.dumps(record) + "\n")
+            f.write(json.dumps(stamped) + "\n")
 
 
 def build_dataloaders(training_cfg):
@@ -140,9 +159,23 @@ def load_checkpoint(path, model, optimizer=None, scheduler=None, map_location="c
     return checkpoint
 
 
-def train_one_epoch(model, loader, optimizer, scheduler, logger, device, epoch, global_step, max_steps=None):
+def sha256_file(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def train_one_epoch(model, loader, optimizer, scheduler, logger, device, epoch, global_step, max_steps=None,
+                    stats=None):
+    """One pass over the training loader. If a stats dict is passed, it is
+    filled with per-epoch counters for the raw log (steps, tokens, gradient
+    norm mean/max); it has no effect on training."""
     model.train()
     epoch_losses = []
+    grad_norms = []
+    tokens = 0
     for batch_idx, (inputs, targets) in enumerate(loader):
         inputs = inputs.to(device)
         targets = targets.to(device)
@@ -153,12 +186,25 @@ def train_one_epoch(model, loader, optimizer, scheduler, logger, device, epoch, 
 
         loss_value = loss.item()
         grad_norm = compute_grad_norm(model)
+        if not (math.isfinite(loss_value) and math.isfinite(grad_norm)):
+            # Record the failure in the raw log before check_finite stops the run.
+            logger.log({
+                "type": "nan_detected",
+                "epoch": epoch,
+                "global_step": global_step,
+                "batch_idx": batch_idx,
+                "train_loss": loss_value,
+                "grad_norm": grad_norm,
+            })
         check_finite(loss_value, grad_norm, global_step)
 
+        lr_used = optimizer.param_groups[0]["lr"]  # LR applied by this step's optimizer.step()
         optimizer.step()
         scheduler.step()
 
         epoch_losses.append(loss_value)
+        grad_norms.append(grad_norm)
+        tokens += targets.numel()
         logger.log({
             "type": "train_step",
             "epoch": epoch,
@@ -167,28 +213,42 @@ def train_one_epoch(model, loader, optimizer, scheduler, logger, device, epoch, 
             "train_loss": loss_value,
             "grad_norm": grad_norm,
             "lr": scheduler.get_last_lr()[0],
+            "lr_used": lr_used,
         })
 
         global_step += 1
         if max_steps is not None and global_step >= max_steps:
             break
 
+    if stats is not None:
+        stats["steps"] = len(epoch_losses)
+        stats["tokens"] = tokens
+        stats["grad_norm_mean"] = sum(grad_norms) / len(grad_norms) if grad_norms else float("nan")
+        stats["grad_norm_max"] = max(grad_norms) if grad_norms else float("nan")
+
     mean_loss = sum(epoch_losses) / len(epoch_losses) if epoch_losses else float("nan")
     return mean_loss, global_step
 
 
-def evaluate(model, loader, device, max_batches=None):
+def evaluate(model, loader, device, max_batches=None, stats=None):
+    """Mean validation loss over the loader. If a stats dict is passed, it
+    is filled with the number of batches and tokens evaluated."""
     model.eval()
     losses = []
+    tokens = 0
     with torch.no_grad():
         for batch_idx, (inputs, targets) in enumerate(loader):
             inputs = inputs.to(device)
             targets = targets.to(device)
             _, loss = model(inputs, targets=targets)
             losses.append(loss.item())
+            tokens += targets.numel()
             if max_batches is not None and (batch_idx + 1) >= max_batches:
                 break
     model.train()
+    if stats is not None:
+        stats["batches"] = len(losses)
+        stats["tokens"] = tokens
     return sum(losses) / len(losses) if losses else float("nan")
 
 
@@ -210,11 +270,14 @@ def generate(model, prompt_indices, max_new_tokens, temperature, sequence_length
 
 
 def run_training(model, full_cfg, device, checkpoint_dir=CHECKPOINT_DIR, logger=None,
-                  max_epochs=None, max_steps_per_epoch=None, max_eval_batches=None):
+                  max_epochs=None, max_steps_per_epoch=None, max_eval_batches=None, run_info=None):
     """Full training driver. Epoch count defaults to
     full_cfg['training']['epochs']; max_epochs/max_steps_per_epoch/
     max_eval_batches are execution-only overrides for smoke testing, not
-    new hyperparameter choices."""
+    new hyperparameter choices. run_info (seed, environment, file hashes,
+    ...) is only written into the run_start log record."""
+    device = torch.device(device)
+    use_cuda = device.type == "cuda"
     training_cfg = full_cfg["training"]
     train_loader, val_loader = build_dataloaders(training_cfg)
 
@@ -227,39 +290,108 @@ def run_training(model, full_cfg, device, checkpoint_dir=CHECKPOINT_DIR, logger=
     logger = logger or RawLogger()
 
     n_params = model.num_parameters()
-    logger.log({"type": "run_start", "num_parameters": n_params, "config": full_cfg})
+    logger.log({
+        "type": "run_start",
+        "num_parameters": n_params,
+        "config": full_cfg,
+        "train_sequences": len(train_loader.dataset),
+        "val_sequences": len(val_loader.dataset),
+        "train_batches_per_epoch": len(train_loader),
+        "val_batches_per_epoch": len(val_loader),
+        "steps_per_epoch": steps_per_epoch,
+        "epochs": epochs,
+        "total_steps": total_steps,
+        "warmup_fraction_of_total_steps": training_cfg["warmup_steps"] / total_steps,
+        **(run_info or {}),
+    })
     print(f"Parameter count: {n_params:,}")
 
     global_step = 0
     history = []
     start_time = datetime.now()
+    run_peak_allocated = 0
+    epoch = None
 
-    for epoch in range(epochs):
-        epoch_start = datetime.now()
-        step_limit = (global_step + max_steps_per_epoch) if max_steps_per_epoch is not None else None
-        train_loss, global_step = train_one_epoch(
-            model, train_loader, optimizer, scheduler, logger, device, epoch, global_step,
-            max_steps=step_limit,
-        )
-        val_loss = evaluate(model, val_loader, device, max_batches=max_eval_batches)
-        epoch_seconds = (datetime.now() - epoch_start).total_seconds()
+    try:
+        for epoch in range(epochs):
+            epoch_start = datetime.now()
+            if use_cuda:
+                torch.cuda.reset_peak_memory_stats(device)
+            step_limit = (global_step + max_steps_per_epoch) if max_steps_per_epoch is not None else None
 
-        history.append({"epoch": epoch, "train_loss": train_loss, "val_loss": val_loss, "seconds": epoch_seconds})
-        logger.log({
-            "type": "epoch_end",
-            "epoch": epoch,
-            "train_loss": train_loss,
-            "val_loss": val_loss,
-            "epoch_seconds": epoch_seconds,
-        })
-        print(f"Epoch {epoch}: train_loss={train_loss:.4f} val_loss={val_loss:.4f} ({epoch_seconds:.1f}s)")
+            train_stats = {}
+            train_start = time.perf_counter()
+            train_loss, global_step = train_one_epoch(
+                model, train_loader, optimizer, scheduler, logger, device, epoch, global_step,
+                max_steps=step_limit, stats=train_stats,
+            )
+            train_seconds = time.perf_counter() - train_start
 
-        checkpoint_path = Path(checkpoint_dir) / f"epoch_{epoch}.pt"
-        save_checkpoint(model, optimizer, scheduler, epoch, global_step, full_cfg, checkpoint_path)
-        logger.log({"type": "checkpoint_saved", "epoch": epoch, "path": str(checkpoint_path)})
+            val_stats = {}
+            val_start = time.perf_counter()
+            val_loss = evaluate(model, val_loader, device, max_batches=max_eval_batches, stats=val_stats)
+            val_seconds = time.perf_counter() - val_start
+            epoch_seconds = (datetime.now() - epoch_start).total_seconds()
+
+            peak_allocated = torch.cuda.max_memory_allocated(device) if use_cuda else None
+            peak_reserved = torch.cuda.max_memory_reserved(device) if use_cuda else None
+            if use_cuda:
+                run_peak_allocated = max(run_peak_allocated, peak_allocated)
+
+            history.append({"epoch": epoch, "train_loss": train_loss, "val_loss": val_loss, "seconds": epoch_seconds})
+            logger.log({
+                "type": "epoch_end",
+                "epoch": epoch,
+                "train_loss": train_loss,
+                "val_loss": val_loss,
+                "epoch_seconds": epoch_seconds,
+                "train_seconds": train_seconds,
+                "val_seconds": val_seconds,
+                "global_step": global_step,
+                "lr": scheduler.get_last_lr()[0],
+                "train_steps": train_stats["steps"],
+                "train_tokens": train_stats["tokens"],
+                "train_tokens_per_sec": train_stats["tokens"] / train_seconds,
+                "val_batches": val_stats["batches"],
+                "val_tokens": val_stats["tokens"],
+                "val_tokens_per_sec": val_stats["tokens"] / val_seconds,
+                "grad_norm_mean": train_stats["grad_norm_mean"],
+                "grad_norm_max": train_stats["grad_norm_max"],
+                "nan_detected": not (math.isfinite(train_loss) and math.isfinite(val_loss)),
+                "peak_gpu_memory_allocated_bytes": peak_allocated,
+                "peak_gpu_memory_reserved_bytes": peak_reserved,
+            })
+            print(f"Epoch {epoch}: train_loss={train_loss:.4f} val_loss={val_loss:.4f} ({epoch_seconds:.1f}s)")
+
+            checkpoint_path = Path(checkpoint_dir) / f"epoch_{epoch}.pt"
+            save_checkpoint(model, optimizer, scheduler, epoch, global_step, full_cfg, checkpoint_path)
+            logger.log({
+                "type": "checkpoint_saved",
+                "epoch": epoch,
+                "path": str(checkpoint_path),
+                "size_bytes": checkpoint_path.stat().st_size,
+                "sha256": sha256_file(checkpoint_path),
+            })
+    except BaseException as e:
+        # Leave a trace of how the run ended in the raw log, then re-raise.
+        logger.log({"type": "run_failed", "epoch": epoch, "global_step": global_step,
+                    "error": f"{type(e).__name__}: {e}"})
+        raise
 
     total_seconds = (datetime.now() - start_time).total_seconds()
-    logger.log({"type": "run_end", "total_seconds": total_seconds})
+    finite_history = [h for h in history if math.isfinite(h["val_loss"])]
+    best = min(finite_history, key=lambda h: h["val_loss"]) if finite_history else None
+    logger.log({
+        "type": "run_end",
+        "total_seconds": total_seconds,
+        "global_step": global_step,
+        "nan_detected": len(finite_history) != len(history),
+        "peak_gpu_memory_allocated_bytes": run_peak_allocated if use_cuda else None,
+        "best_epoch_by_val_loss": best["epoch"] if best else None,
+        "best_val_loss": best["val_loss"] if best else None,
+        "best_checkpoint": str(Path(checkpoint_dir) / f"epoch_{best['epoch']}.pt") if best else None,
+        "final_checkpoint": str(Path(checkpoint_dir) / f"epoch_{epochs - 1}.pt"),
+    })
     print(f"Total training time: {total_seconds:.1f}s")
 
     return history, logger.path
