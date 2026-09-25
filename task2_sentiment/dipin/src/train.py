@@ -7,7 +7,6 @@ best-validation-macro-F1 checkpoint with its config, hardware and timing metadat
 import json
 import math
 import platform
-import resource
 import subprocess
 import time
 from datetime import datetime
@@ -45,6 +44,10 @@ def cpu_name():
             for line in open("/proc/cpuinfo"):
                 if line.startswith("model name"):
                     return line.split(":", 1)[1].strip()
+        if platform.system() == "Windows":
+            import winreg
+            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"HARDWARE\DESCRIPTION\System\CentralProcessor\0")
+            return winreg.QueryValueEx(key, "ProcessorNameString")[0].strip()
     except Exception:
         pass
     return platform.processor() or "unknown"
@@ -69,10 +72,30 @@ def reset_peak_memory(device):
         torch.cuda.reset_peak_memory_stats(device)
 
 
+def peak_host_rss_bytes():
+    if platform.system() == "Windows":
+        import ctypes
+        from ctypes import wintypes
+
+        class PMC(ctypes.Structure):
+            _fields_ = [("cb", wintypes.DWORD), ("PageFaultCount", wintypes.DWORD),
+                        ("PeakWorkingSetSize", ctypes.c_size_t), ("WorkingSetSize", ctypes.c_size_t),
+                        ("QuotaPeakPagedPoolUsage", ctypes.c_size_t), ("QuotaPagedPoolUsage", ctypes.c_size_t),
+                        ("QuotaPeakNonPagedPoolUsage", ctypes.c_size_t), ("QuotaNonPagedPoolUsage", ctypes.c_size_t),
+                        ("PagefileUsage", ctypes.c_size_t), ("PeakPagefileUsage", ctypes.c_size_t)]
+        pmc = PMC(cb=ctypes.sizeof(PMC))
+        psapi = ctypes.WinDLL("psapi")
+        psapi.GetProcessMemoryInfo.argtypes = [wintypes.HANDLE, ctypes.POINTER(PMC), wintypes.DWORD]
+        psapi.GetProcessMemoryInfo(ctypes.windll.kernel32.GetCurrentProcess(), ctypes.byref(pmc), pmc.cb)
+        return pmc.PeakWorkingSetSize
+    import resource
+    rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    return rss if platform.system() == "Darwin" else rss * 1024
+
+
 def peak_memory(device):
     """Peak accelerator memory allocated by tensors, plus process peak RSS (host RAM)."""
-    rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-    rss_bytes = rss if platform.system() == "Darwin" else rss * 1024
+    rss_bytes = peak_host_rss_bytes()
     acc = None
     if device.type == "cuda":
         acc = torch.cuda.max_memory_allocated(device)

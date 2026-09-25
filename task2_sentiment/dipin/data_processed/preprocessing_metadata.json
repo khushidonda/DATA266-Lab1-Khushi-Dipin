@@ -1,0 +1,56 @@
+{
+  "dataset": "fancyzhx/yelp_polarity",
+  "seed": 42,
+  "vocab_size": 40002,
+  "train_unique_tokens": 174508,
+  "max_sequence_length": 200,
+  "smoke_subset": null,
+  "splits": {
+    "train": {
+      "n": 504000,
+      "label0": 252000,
+      "label1": 252000,
+      "empty_after_cleaning": 24,
+      "truncated": 22896,
+      "truncated_pct": 4.542857142857143,
+      "processed_length_percentiles_50_90_95_99": [
+        51.0,
+        147.0,
+        193.0,
+        317.0
+      ],
+      "unk_rate_pct": 0.642082508352048
+    },
+    "validation": {
+      "n": 56000,
+      "label0": 28000,
+      "label1": 28000,
+      "empty_after_cleaning": 8,
+      "truncated": 2515,
+      "truncated_pct": 4.491071428571428,
+      "processed_length_percentiles_50_90_95_99": [
+        51.0,
+        146.0,
+        193.0,
+        314.0
+      ],
+      "unk_rate_pct": 0.7370986539066305
+    },
+    "test": {
+      "n": 38000,
+      "label0": 19000,
+      "label1": 19000,
+      "empty_after_cleaning": 0,
+      "truncated": 1694,
+      "truncated_pct": 4.457894736842105,
+      "processed_length_percentiles_50_90_95_99": [
+        51.0,
+        146.0,
+        192.0,
+        312.0
+      ],
+      "unk_rate_pct": 0.6995889602575783
+    }
+  },
+  "train_validation_overlap": 0
+}

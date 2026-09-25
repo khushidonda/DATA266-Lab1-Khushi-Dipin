@@ -1,3 +1,4 @@
 outputs/smoke/
 checkpoints/*_smoke.pt
+.venv/
 
