@@ -8,15 +8,13 @@ Slices are defined on the raw review text so they are independent of preprocessi
 
 import re
 
-import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
 from sklearn.metrics import (accuracy_score, average_precision_score, brier_score_loss, confusion_matrix,
                              matthews_corrcoef, precision_recall_curve, precision_recall_fscore_support,
                              roc_auc_score, roc_curve)
 
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
 
 NEGATION_RE = re.compile(r"\b(not|no|never|nothing|none|nobody|nor|neither|without|cannot)\b|n't\b", re.I)
 CONTRAST_RE = re.compile(r"\b(but|however|although|though|yet|except|despite)\b", re.I)
@@ -26,7 +24,7 @@ def macro_f1(y, p):
     return precision_recall_fscore_support(y, p, average="macro", zero_division=0)[2]
 
 
-def expected_calibration_error(y, prob, pred, n_bins=15):
+def expected_calibration_error(y, prob, pred, n_bins=10):
     conf = np.where(pred == 1, prob, 1 - prob)
     correct = (pred == y).astype(float)
     edges = np.linspace(0, 1, n_bins + 1)
