@@ -1,18 +1,18 @@
 metric,value,notes
-training_cross_entropy_loss,,
-validation_cross_entropy_loss,,
-perplexity,,
-bits_per_character,,
-generalization_gap,,
-top1_next_character_accuracy,,
-distinct_1,,
-distinct_2,,
-distinct_3,,
-repeated_4gram_rate,,
-gradient_norm,,
-nan_count,,
-parameter_count,,
-training_tokens_per_sec,,
-generation_tokens_per_sec,,
-peak_memory_usage,,
-total_training_time,,
+training_cross_entropy_loss,0.8638971224,eval mode (dropout off), full train split (644854 sequences), primary checkpoint epoch_9
+validation_cross_entropy_loss,0.8642926901,eval mode, full validation split (64576 sequences), primary checkpoint epoch_9
+perplexity,2.3733,validation; training perplexity = 2.3724
+bits_per_character,1.2469,validation; training bpc = 1.2463
+generalization_gap,0.0003956,validation_eval_ce - training_eval_ce (nats/char); near zero, no meaningful overfitting
+top1_next_character_accuracy,0.7275,validation (72.75%); training = 0.7276 (72.76%)
+distinct_1,0.0051,character-level (primary); word-level Distinct-1 = 0.2395 (secondary)
+distinct_2,0.0436,character-level (primary); word-level Distinct-2 = 0.6463 (secondary)
+distinct_3,0.1592,character-level (primary); word-level Distinct-3 = 0.8569 (secondary)
+repeated_4gram_rate,0.1309,character-level (primary); word-level repeated-4-gram rate = 0.0020 (secondary)
+gradient_norm,0.4076,mean over all 100760 optimizer steps; range 0.1375-1.4374 (max at step 126); clipping = none (reported only)
+nan_count,0,zero NaN/Inf events over the full run (100760 steps)
+parameter_count,574830,from task1_config.json architecture (embedding_dim 128 / 4 heads / 4 blocks / feed_forward_dim 256)
+training_tokens_per_sec,307816.59,includes per-step gradient-norm computation and raw-log write overhead
+generation_tokens_per_sec,566.42,batch size 1, 50 samples x 200 new chars, CUDA-synchronized
+peak_memory_usage,465645568,peak GPU memory allocated in bytes (444.1 MiB); peak reserved = 503316480 bytes (480.0 MiB)
+total_training_time,2705.14,seconds, all 10 epochs, NVIDIA GeForce RTX 5090
