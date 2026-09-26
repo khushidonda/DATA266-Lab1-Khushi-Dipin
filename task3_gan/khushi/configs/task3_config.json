@@ -1,15 +1,57 @@
 {
-  "seed": null,
-  "image_size": null,
-  "generator": {},
-  "discriminator": {},
+  "seed": 42,
+  "image_size": 256,
+  "generator": {
+    "type": "resnet_9blocks",
+    "residual_blocks": 9,
+    "padding": "reflection",
+    "downsampling": "2_stride2_conv",
+    "upsampling": "conv_transpose2d",
+    "normalization": "instance_norm",
+    "output_activation": "tanh"
+  },
+  "discriminator": {
+    "type": "patchgan_70x70",
+    "normalization": "instance_norm",
+    "output_activation": "none"
+  },
   "training": {
-    "batch_size": null,
-    "learning_rate": null,
-    "optimizer": "",
-    "epochs": null,
-    "cycle_consistency_weight": null,
-    "identity_loss_weight": null
+    "batch_size": 1,
+    "optimizer": "Adam",
+    "beta1": 0.5,
+    "beta2": 0.999,
+    "learning_rate": 2e-4,
+    "epochs": 200,
+    "lr_schedule": {
+      "type": "constant_then_linear_decay",
+      "constant_epochs": [1, 100],
+      "decay_epochs": [101, 200],
+      "decay_target": 0.0
+    },
+    "epoch_length_policy": "larger_domain",
+    "steps_per_epoch": 7038,
+    "total_steps": 1407600,
+    "monet_sampling": "independent_uniform_random_resample_per_access",
+    "gan_objective": "LSGAN",
+    "lsgan_targets": {
+      "real": 1.0,
+      "fake": 0.0
+    },
+    "cycle_consistency_weight": 10,
+    "cycle_loss_type": "L1",
+    "identity_loss_enabled": true,
+    "identity_loss_weight": 5,
+    "replay_buffer": {
+      "enabled": true,
+      "size_per_domain": 50,
+      "pools": ["fake_A", "fake_B"]
+    },
+    "augmentation": {
+      "resize": 286,
+      "random_crop": 256,
+      "random_horizontal_flip": true,
+      "independent_per_domain": true
+    }
   },
   "hardware": {
     "device": "",
