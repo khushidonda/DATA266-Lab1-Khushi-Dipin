@@ -1,0 +1,49 @@
+{
+  "task": "task2_sentiment",
+  "member": "dipin",
+  "config": "task2_sentiment/dipin/configs/task2_config.json",
+  "notebook": "task2_sentiment/dipin/src/task2_dipin.ipynb",
+  "metrics_file": "task2_sentiment/dipin/metrics_report.csv",
+  "run_summary": "task2_sentiment/dipin/outputs/run_summary.json",
+  "environment": "reproducibility/manifests/dipin/environment_task2.txt",
+  "hardware": {
+    "device": "cuda",
+    "cpu": "Intel(R) Core(TM) Ultra 9 285K",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "torch": "2.11.0+cu128",
+    "gpu": "NVIDIA GeForce RTX 5090",
+    "gpu_memory_gb": 34.19,
+    "cuda": "12.8",
+    "cudnn": 91900
+  },
+  "runs": {
+    "baseline": {
+      "run_id": "task2_baseline_20260925_163551",
+      "raw_log": "reproducibility\\raw_logs\\dipin\\task2_baseline_20260925_163551.jsonl",
+      "checkpoint": "task2_sentiment\\dipin\\checkpoints\\baseline.pt",
+      "best_epoch": 3,
+      "test_accuracy": 0.9517894736842105,
+      "test_macro_f1": 0.9517894202652857,
+      "test_mcc": 0.9035809497660964
+    },
+    "experimental_1": {
+      "run_id": "task2_experimental_1_20260925_163845",
+      "raw_log": "reproducibility\\raw_logs\\dipin\\task2_experimental_1_20260925_163845.jsonl",
+      "checkpoint": "task2_sentiment\\dipin\\checkpoints\\experimental_1.pt",
+      "best_epoch": 3,
+      "test_accuracy": 0.9531052631578948,
+      "test_macro_f1": 0.9531050447910812,
+      "test_mcc": 0.9062189659898915
+    },
+    "experimental_2": {
+      "run_id": "task2_experimental_2_20260925_164755",
+      "raw_log": "reproducibility\\raw_logs\\dipin\\task2_experimental_2_20260925_164755.jsonl",
+      "checkpoint": "task2_sentiment\\dipin\\checkpoints\\experimental_2.pt",
+      "best_epoch": 3,
+      "test_accuracy": 0.9533157894736842,
+      "test_macro_f1": 0.9533154123760179,
+      "test_mcc": 0.906646226048481
+    }
+  }
+}

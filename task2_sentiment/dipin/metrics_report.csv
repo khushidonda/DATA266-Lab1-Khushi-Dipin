@@ -1,22 +1,148 @@
 model,metric,value,notes
-baseline,accuracy,,
-baseline,precision_macro,,
-baseline,recall_macro,,
-baseline,f1_macro,,
-baseline,precision_micro,,
-baseline,recall_micro,,
-baseline,f1_micro,,
-baseline,precision_weighted,,
-baseline,recall_weighted,,
-baseline,f1_weighted,,
-baseline,roc_auc,,
-baseline,pr_auc,,
-baseline,mcc,,
-baseline,brier_score,,
-baseline,expected_calibration_error,,
-baseline,parameter_count,,
-baseline,training_time,,
-baseline,examples_per_sec,,
-baseline,peak_memory_usage,,
-experimental_1,accuracy,,
-experimental_2,accuracy,,
+baseline,accuracy,0.9517894736842105,test set
+baseline,precision_macro,0.9517914760841045,test set
+baseline,recall_macro,0.9517894736842105,test set
+baseline,f1_macro,0.9517894202652857,test set
+baseline,precision_micro,0.9517894736842105,test set
+baseline,recall_micro,0.9517894736842105,test set
+baseline,f1_micro,0.9517894736842105,test set
+baseline,precision_weighted,0.9517914760841045,test set
+baseline,recall_weighted,0.9517894736842105,test set
+baseline,f1_weighted,0.9517894202652857,test set
+baseline,tn,18064,test set
+baseline,fp,936,test set
+baseline,fn,896,test set
+baseline,tp,18104,test set
+baseline,roc_auc,0.9889979030470913,test set
+baseline,pr_auc,0.9888848763206298,test set
+baseline,mcc,0.9035809497660964,test set
+baseline,brier_score,0.037630461156368256,test set
+baseline,expected_calibration_error,0.014860085928126425,test set
+baseline,accuracy_ci95_lower,0.9496315789473684,test set
+baseline,accuracy_ci95_upper,0.953896052631579,test set
+baseline,macro_f1_ci95_lower,0.9496315719955314,test set
+baseline,macro_f1_ci95_upper,0.9538959656227801,test set
+baseline,mcc_ci95_lower,0.8992742808288788,test set
+baseline,mcc_ci95_upper,0.9078053380718254,test set
+baseline,parameter_count,8169489,test set
+baseline,training_time_s,167.3586333000003,test set
+baseline,train_examples_per_sec,12045.987471624487,test set
+baseline,inference_examples_per_sec,86703.05913465619,test set
+baseline,peak_gpu_memory_bytes,605126656,test set
+baseline,peak_host_rss_bytes,3934740480,test set
+baseline,slice_macro_f1[all],0.9517894202652857,n=38000
+baseline,slice_error_rate[all],0.048210526315789475,n=38000
+baseline,slice_macro_f1[raw_length_short(<= 65 words)],0.9487771872742303,n=12776
+baseline,slice_error_rate[raw_length_short(<= 65 words)],0.04970256731371321,n=12776
+baseline,slice_macro_f1[raw_length_medium(65-142)],0.952880693890229,n=12649
+baseline,slice_error_rate[raw_length_medium(65-142)],0.04711834927662266,n=12649
+baseline,slice_macro_f1[raw_length_long(> 142 words)],0.9506721448336828,n=12575
+baseline,slice_error_rate[raw_length_long(> 142 words)],0.04779324055666004,n=12575
+baseline,slice_macro_f1[contains_negation],0.9493627765924075,n=28526
+baseline,slice_error_rate[contains_negation],0.04911308981280236,n=28526
+baseline,slice_macro_f1[contains_contrast_word],0.9466835514203262,n=22551
+baseline,slice_error_rate[contains_contrast_word],0.05281362245576693,n=22551
+baseline,slice_macro_f1[truncated],0.9303261118888863,n=1694
+baseline,slice_error_rate[truncated],0.06139315230224321,n=1694
+baseline,slice_macro_f1[high_unk_rate(>10%)],0.8441558441558441,n=231
+baseline,slice_error_rate[high_unk_rate(>10%)],0.13852813852813853,n=231
+baseline,hardware,NVIDIA GeForce RTX 5090,Intel(R) Core(TM) Ultra 9 285K
+experimental_1,accuracy,0.9531052631578948,test set
+experimental_1,precision_macro,0.9531137028712967,test set
+experimental_1,recall_macro,0.9531052631578947,test set
+experimental_1,f1_macro,0.9531050447910812,test set
+experimental_1,precision_micro,0.9531052631578948,test set
+experimental_1,recall_micro,0.9531052631578948,test set
+experimental_1,f1_micro,0.9531052631578948,test set
+experimental_1,precision_weighted,0.9531137028712968,test set
+experimental_1,recall_weighted,0.9531052631578948,test set
+experimental_1,f1_weighted,0.9531050447910813,test set
+experimental_1,tn,18150,test set
+experimental_1,fp,850,test set
+experimental_1,fn,932,test set
+experimental_1,tp,18068,test set
+experimental_1,roc_auc,0.9900866689750694,test set
+experimental_1,pr_auc,0.9901635418036515,test set
+experimental_1,mcc,0.9062189659898915,test set
+experimental_1,brier_score,0.03635955601930618,test set
+experimental_1,expected_calibration_error,0.015680476229441794,test set
+experimental_1,accuracy_ci95_lower,0.9510526315789474,test set
+experimental_1,accuracy_ci95_upper,0.9550802631578947,test set
+experimental_1,macro_f1_ci95_lower,0.9510513691515935,test set
+experimental_1,macro_f1_ci95_upper,0.9550800713570501,test set
+experimental_1,mcc_ci95_lower,0.9021209955635298,test set
+experimental_1,mcc_ci95_upper,0.9101837308015069,test set
+experimental_1,parameter_count,8733841,test set
+experimental_1,training_time_s,543.123381999998,test set
+experimental_1,train_examples_per_sec,3711.8637621092284,test set
+experimental_1,inference_examples_per_sec,32300.016149948915,test set
+experimental_1,peak_gpu_memory_bytes,1026383872,test set
+experimental_1,peak_host_rss_bytes,3954954240,test set
+experimental_1,slice_macro_f1[all],0.9531050447910812,n=38000
+experimental_1,slice_error_rate[all],0.04689473684210526,n=38000
+experimental_1,slice_macro_f1[raw_length_short(<= 65 words)],0.9505873322589351,n=12776
+experimental_1,slice_error_rate[raw_length_short(<= 65 words)],0.04798058860363181,n=12776
+experimental_1,slice_macro_f1[raw_length_medium(65-142)],0.9534347922206026,n=12649
+experimental_1,slice_error_rate[raw_length_medium(65-142)],0.046564945845521385,n=12649
+experimental_1,slice_macro_f1[raw_length_long(> 142 words)],0.9522989680278887,n=12575
+experimental_1,slice_error_rate[raw_length_long(> 142 words)],0.046123260437375746,n=12575
+experimental_1,slice_macro_f1[contains_negation],0.9506051640866793,n=28526
+experimental_1,slice_error_rate[contains_negation],0.047851083222323496,n=28526
+experimental_1,slice_macro_f1[contains_contrast_word],0.9483764565493609,n=22551
+experimental_1,slice_error_rate[contains_contrast_word],0.05108420912598111,n=22551
+experimental_1,slice_macro_f1[truncated],0.9361478839290497,n=1694
+experimental_1,slice_error_rate[truncated],0.05608028335301062,n=1694
+experimental_1,slice_macro_f1[high_unk_rate(>10%)],0.842051282051282,n=231
+experimental_1,slice_error_rate[high_unk_rate(>10%)],0.13852813852813853,n=231
+experimental_1,hardware,NVIDIA GeForce RTX 5090,Intel(R) Core(TM) Ultra 9 285K
+experimental_2,accuracy,0.9533157894736842,test set
+experimental_2,precision_macro,0.9533304366931123,test set
+experimental_2,recall_macro,0.9533157894736842,test set
+experimental_2,f1_macro,0.9533154123760179,test set
+experimental_2,precision_micro,0.9533157894736842,test set
+experimental_2,recall_micro,0.9533157894736842,test set
+experimental_2,f1_micro,0.9533157894736842,test set
+experimental_2,precision_weighted,0.9533304366931123,test set
+experimental_2,recall_weighted,0.9533157894736842,test set
+experimental_2,f1_weighted,0.9533154123760179,test set
+experimental_2,tn,18167,test set
+experimental_2,fp,833,test set
+experimental_2,fn,941,test set
+experimental_2,tp,18059,test set
+experimental_2,roc_auc,0.9902728975069252,test set
+experimental_2,pr_auc,0.990336473321087,test set
+experimental_2,mcc,0.906646226048481,test set
+experimental_2,brier_score,0.035995081067085266,test set
+experimental_2,expected_calibration_error,0.014448754883126249,test set
+experimental_2,accuracy_ci95_lower,0.9511572368421053,test set
+experimental_2,accuracy_ci95_upper,0.9553953947368421,test set
+experimental_2,macro_f1_ci95_lower,0.9511561344880701,test set
+experimental_2,macro_f1_ci95_upper,0.9553948291980755,test set
+experimental_2,mcc_ci95_lower,0.9023278119817577,test set
+experimental_2,mcc_ci95_upper,0.9108086097576074,test set
+experimental_2,parameter_count,8766865,test set
+experimental_2,training_time_s,693.2898185000013,test set
+experimental_2,train_examples_per_sec,2907.8748110881083,test set
+experimental_2,inference_examples_per_sec,27277.892452568107,test set
+experimental_2,peak_gpu_memory_bytes,1027960832,test set
+experimental_2,peak_host_rss_bytes,4065681408,test set
+experimental_2,slice_macro_f1[all],0.9533154123760179,n=38000
+experimental_2,slice_error_rate[all],0.046684210526315786,n=38000
+experimental_2,slice_macro_f1[raw_length_short(<= 65 words)],0.9492128127313899,n=12776
+experimental_2,slice_error_rate[raw_length_short(<= 65 words)],0.04931120851596744,n=12776
+experimental_2,slice_macro_f1[raw_length_medium(65-142)],0.9553323826280373,n=12649
+experimental_2,slice_error_rate[raw_length_medium(65-142)],0.04466756265317416,n=12649
+experimental_2,slice_macro_f1[raw_length_long(> 142 words)],0.9523626326442987,n=12575
+experimental_2,slice_error_rate[raw_length_long(> 142 words)],0.046043737574552684,n=12575
+experimental_2,slice_macro_f1[contains_negation],0.9514686732636186,n=28526
+experimental_2,slice_error_rate[contains_negation],0.04700974549533759,n=28526
+experimental_2,slice_macro_f1[contains_contrast_word],0.9482500496704178,n=22551
+experimental_2,slice_error_rate[contains_contrast_word],0.05121724092058002,n=22551
+experimental_2,slice_macro_f1[truncated],0.9249665820341852,n=1694
+experimental_2,slice_error_rate[truncated],0.06611570247933884,n=1694
+experimental_2,slice_macro_f1[high_unk_rate(>10%)],0.8333191850594228,n=231
+experimental_2,slice_error_rate[high_unk_rate(>10%)],0.1471861471861472,n=231
+experimental_2,hardware,NVIDIA GeForce RTX 5090,Intel(R) Core(TM) Ultra 9 285K
+baseline vs experimental_1,mcnemar_p_value,0.08236496421668708,discordant: 373 / 423
+baseline vs experimental_2,mcnemar_p_value,0.05987480512005676,discordant: 430 / 488
+experimental_1 vs experimental_2,mcnemar_p_value,0.812423490361492,discordant: 431 / 439
