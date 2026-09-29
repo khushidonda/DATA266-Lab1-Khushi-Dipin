@@ -1,18 +1,52 @@
 {
-  "seed": null,
-  "image_size": null,
-  "generator": {},
-  "discriminator": {},
+  "seed": 266,
+  "image_size": 256,
+  "data": {
+    "root": "task3_gan/data/dataset",
+    "domain_A": "photo",
+    "domain_B": "monet",
+    "test_photos": 500,
+    "test_monet": 30
+  },
+  "generator": {
+    "type": "resnet_9blocks",
+    "ngf": 64,
+    "residual_blocks": 9,
+    "padding": "reflection",
+    "normalization": "instance_norm",
+    "output_activation": "tanh"
+  },
+  "discriminator": {
+    "type": "patchgan_70x70",
+    "ndf": 64,
+    "normalization": "instance_norm",
+    "output_activation": "none (LSGAN)"
+  },
   "training": {
-    "batch_size": null,
-    "learning_rate": null,
-    "optimizer": "",
-    "epochs": null,
-    "cycle_consistency_weight": null,
-    "identity_loss_weight": null
+    "batch_size": 1,
+    "learning_rate": 0.0002,
+    "optimizer": "Adam",
+    "beta1": 0.5,
+    "beta2": 0.999,
+    "epochs": 100,
+    "constant_epochs": 50,
+    "decay_epochs": 50,
+    "steps_per_epoch": 1500,
+    "gan_objective": "LSGAN (MSE)",
+    "cycle_consistency_weight": 10.0,
+    "identity_loss_weight": 5.0,
+    "replay_buffer_size": 50,
+    "augmentation": {
+      "resize": 286,
+      "random_crop": 256,
+      "random_horizontal_flip": true
+    },
+    "amp_bf16": false,
+    "log_every": 100,
+    "snapshot_every": 10
   },
   "hardware": {
-    "device": "",
-    "gpu": ""
+    "device": "cuda",
+    "gpu": "NVIDIA GeForce RTX 4090 (24 GB)"
   }
 }
