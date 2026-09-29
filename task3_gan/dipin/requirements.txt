@@ -1,0 +1,11 @@
+torch>=2.6
+torchvision>=0.21
+numpy>=1.26
+scipy>=1.14
+pillow>=10.0
+pandas>=2.0
+matplotlib>=3.8
+lpips>=0.1.4
+torch-fidelity>=0.3.0
+jupyter
+nbconvert
