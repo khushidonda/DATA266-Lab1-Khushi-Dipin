@@ -28,7 +28,7 @@ import torch.nn as nn
 from torchvision.utils import save_image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from data import (DIPIN, GpuAugment, UnpairedSampler, load_split, make_splits,
+from data import (CKPT, DIPIN, OUT, GpuAugment, UnpairedSampler, load_split, make_splits,
                   to_model_range)
 from models import build_models, count_params
 
@@ -67,8 +67,9 @@ def seed_all(seed):
 
 
 def grad_norm(params):
-    norms = [p.grad.detach().float().norm(2) for p in params if p.grad is not None]
-    return torch.stack(norms).norm(2).item() if norms else 0.0
+    """Global L2 norm of all gradients, returned as a device tensor (no host sync)."""
+    grads = [p.grad.detach() for p in params if p.grad is not None]
+    return torch.linalg.vector_norm(torch.stack(torch._foreach_norm(grads)).float())
 
 
 def lr_lambda_factory(constant_epochs, decay_epochs):
@@ -122,8 +123,7 @@ def main():
     total_epochs = tr["constant_epochs"] + tr["decay_epochs"]
 
     tag = "smoke" if args.smoke else "full"
-    out_dir = DIPIN / "outputs" / ("smoke" if args.smoke else "")
-    ckpt_dir = DIPIN / "checkpoints" / ("smoke" if args.smoke else "")
+    out_dir, ckpt_dir = OUT, CKPT
     log_dir, sample_dir = out_dir / "logs", out_dir / "samples"
     for d in (ckpt_dir, log_dir, sample_dir):
         d.mkdir(parents=True, exist_ok=True)
@@ -178,8 +178,8 @@ def main():
         start_epoch, global_step = ck["epoch"], ck["global_step"]
         nan_total, train_seconds, run_id = ck["nan_total"], ck["train_seconds"], ck["run_id"]
         pool_A.images, pool_B.images = ck["pool_A"], ck["pool_B"]
-        random.setstate(ck["py_rng"]); torch.set_rng_state(ck["torch_rng"])
-        sampler.g.set_state(ck["sampler_rng"])
+        random.setstate(ck["py_rng"]); torch.set_rng_state(ck["torch_rng"].cpu())
+        sampler.g.set_state(ck["sampler_rng"].cpu())
         print(f"resumed {run_id} at epoch {start_epoch}, step {global_step}", flush=True)
     log_path = log_dir / f"{run_id}.jsonl"
     log_f = open(log_path, "a", encoding="utf-8")
@@ -224,12 +224,10 @@ def main():
                     idt = torch.zeros((), device=device)
                 loss_G = adv + lam_cyc * cyc + lam_id * idt
             loss_G.backward()
-            gn_G = grad_norm(g_params)
-            ok_G = math.isfinite(loss_G.item()) and math.isfinite(gn_G)
-            if ok_G:
-                opt_G.step()
 
             # ---- discriminators ----
+            # Fakes from the pool are detached, so D's backward leaves G's grads
+            # untouched and both optimizer steps can wait for a single host sync.
             for p in d_params:
                 p.requires_grad_(True)
             opt_D.zero_grad(set_to_none=True)
@@ -240,19 +238,18 @@ def main():
                 loss_D_A = 0.5 * (mse(pa_real, torch.ones_like(pa_real)) + mse(pa_fake, torch.zeros_like(pa_fake)))
                 loss_D_B = 0.5 * (mse(pb_real, torch.ones_like(pb_real)) + mse(pb_fake, torch.zeros_like(pb_fake)))
             (loss_D_A + loss_D_B).backward()
-            gn_D = grad_norm(d_params)
-            ok_D = math.isfinite(loss_D_A.item() + loss_D_B.item()) and math.isfinite(gn_D)
-            if ok_D:
-                opt_D.step()
-            if not (ok_G and ok_D):  # non-finite step: update skipped, counted
+
+            stats = torch.stack([loss_G.detach().float(), adv.detach().float(), cyc.detach().float(),
+                                 idt.detach().float(), loss_D_A.detach(), loss_D_B.detach(),
+                                 pa_real.detach().mean(), pa_fake.detach().mean(),
+                                 pb_real.detach().mean(), pb_fake.detach().mean(),
+                                 grad_norm(g_params), grad_norm(d_params)]).tolist()  # one sync
+            if not all(math.isfinite(v) for v in stats):  # non-finite step: both updates skipped, counted
                 ep_nan += 1
                 continue
+            opt_G.step(); opt_D.step()
 
-            vals = dict(loss_G=loss_G.item(), loss_G_adv=adv.item(), loss_cyc=cyc.item(),
-                        loss_id=idt.item(), loss_D_A=loss_D_A.item(), loss_D_B=loss_D_B.item(),
-                        D_A_real=pa_real.mean().item(), D_A_fake=pa_fake.mean().item(),
-                        D_B_real=pb_real.mean().item(), D_B_fake=pb_fake.mean().item(),
-                        grad_norm_G=gn_G, grad_norm_D=gn_D)
+            vals = dict(zip(keys, stats))
             for k, v in vals.items():
                 acc[k] += v; ep_acc[k] += v
             acc_n += 1; ep_n += 1

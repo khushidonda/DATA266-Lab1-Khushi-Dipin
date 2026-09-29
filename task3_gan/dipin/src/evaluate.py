@@ -33,7 +33,7 @@ from PIL import Image
 from scipy import linalg
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from data import DIPIN, load_split, make_splits, to_model_range, to_uint8
+from data import CKPT, DIPIN, OUT, load_split, make_splits, to_model_range, to_uint8
 from models import ResnetGenerator
 
 CFG = json.loads((DIPIN / "configs" / "task3_config.json").read_text())
@@ -56,7 +56,7 @@ class Inception:
 def fid(f1, f2):
     mu1, mu2 = f1.mean(0), f2.mean(0)
     s1, s2 = np.cov(f1, rowvar=False), np.cov(f2, rowvar=False)
-    covmean, _ = linalg.sqrtm(s1.dot(s2), disp=False)
+    covmean = linalg.sqrtm(s1.dot(s2))
     if not np.isfinite(covmean).all():
         off = np.eye(len(s1)) * 1e-6
         covmean = linalg.sqrtm((s1 + off).dot(s2 + off))
@@ -155,8 +155,8 @@ def save_jpgs(x_u8, names, folder):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--ckpt-dir", default=str(DIPIN / "checkpoints"))
-    ap.add_argument("--out-dir", default=str(DIPIN / "outputs" / "eval"))
+    ap.add_argument("--ckpt-dir", default=str(CKPT))
+    ap.add_argument("--out-dir", default=str(OUT / "eval"))
     args = ap.parse_args()
     ckpt, out = Path(args.ckpt_dir), Path(args.out_dir)
     out.mkdir(parents=True, exist_ok=True)
@@ -229,7 +229,7 @@ def main():
                 w.writerow([n] + [f"{pim[k][i]:.6f}" for k in pim])
 
     # translated test images for inspection / failure analysis
-    tdir = DIPIN / "outputs" / "translations"
+    tdir = OUT / "translations"
     save_jpgs(fake_B, A_names, tdir / "A2B_photo_to_monet")
     save_jpgs(rec_A, A_names, tdir / "A2B_cycle_reconstruction")
     save_jpgs(fake_A_all[:n_bt], B_test_names, tdir / "B2A_monet_to_photo")

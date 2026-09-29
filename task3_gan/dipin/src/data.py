@@ -6,6 +6,7 @@ training loop samples A and B independently (unpaired) and applies the
 CycleGAN augmentation (resize 286 -> random crop 256 -> random h-flip) on GPU.
 """
 import json
+import os
 import random
 from pathlib import Path
 
@@ -18,6 +19,11 @@ IMG_EXT = {".jpg", ".jpeg", ".png"}
 HERE = Path(__file__).resolve().parent
 DIPIN = HERE.parent
 REPO = DIPIN.parent.parent
+# Smoke test: TASK3_SMOKE_ROOT points at a tiny synthetic dataset; splits and all
+# outputs are then redirected under outputs/smoke so real results are untouched.
+SMOKE_ROOT = os.environ.get("TASK3_SMOKE_ROOT")
+OUT = DIPIN / "outputs" / "smoke" if SMOKE_ROOT else DIPIN / "outputs"
+CKPT = DIPIN / "checkpoints" / "smoke" if SMOKE_ROOT else DIPIN / "checkpoints"
 
 
 def list_images(folder):
@@ -39,16 +45,18 @@ def find_domain_dirs(data_root):
 
 def make_splits(cfg, force=False):
     """Deterministic train/test split per domain, saved to data_processed/splits.json."""
-    out = DIPIN / "data_processed" / "splits.json"
+    out = OUT / "splits.json" if SMOKE_ROOT else DIPIN / "data_processed" / "splits.json"
     if out.exists() and not force:
         return json.loads(out.read_text())
-    photo_dir, monet_dir = find_domain_dirs(REPO / cfg["data"]["root"])
+    photo_dir, monet_dir = find_domain_dirs(SMOKE_ROOT or REPO / cfg["data"]["root"])
     rng = random.Random(cfg["seed"])
-    splits = {"A_dir": str(photo_dir.relative_to(REPO).as_posix()),
-              "B_dir": str(monet_dir.relative_to(REPO).as_posix())}
+    rel = (lambda p: str(p)) if SMOKE_ROOT else (lambda p: p.relative_to(REPO).as_posix())
+    splits = {"A_dir": rel(photo_dir), "B_dir": rel(monet_dir)}
     for dom, folder, n_test in [("A", photo_dir, cfg["data"]["test_photos"]),
                                 ("B", monet_dir, cfg["data"]["test_monet"])]:
         names = [p.name for p in list_images(folder)]
+        if SMOKE_ROOT:
+            n_test = min(n_test, len(names) // 4)
         rng.shuffle(names)
         splits[f"{dom}_test"] = sorted(names[:n_test])
         splits[f"{dom}_train"] = sorted(names[n_test:])

@@ -23,15 +23,15 @@
     "output_activation": "none (LSGAN)"
   },
   "training": {
-    "batch_size": 1,
+    "batch_size": 4,
     "learning_rate": 0.0002,
     "optimizer": "Adam",
     "beta1": 0.5,
     "beta2": 0.999,
-    "epochs": 100,
-    "constant_epochs": 50,
-    "decay_epochs": 50,
-    "steps_per_epoch": 1500,
+    "epochs": 50,
+    "constant_epochs": 25,
+    "decay_epochs": 25,
+    "steps_per_epoch": 1635,
     "gan_objective": "LSGAN (MSE)",
     "cycle_consistency_weight": 10.0,
     "identity_loss_weight": 5.0,
@@ -41,9 +41,11 @@
       "random_crop": 256,
       "random_horizontal_flip": true
     },
-    "amp_bf16": false,
+    "amp_bf16": true,
     "log_every": 100,
-    "snapshot_every": 10
+    "snapshot_every": 5,
+    "epoch_definition": "one pass over the 6,538 training photos (1,635 steps x batch 4); Monet sampled independently with replacement",
+    "precision_note": "bf16 autocast for conv layers; losses, norms and optimizer state in fp32 (1.8x faster than fp32 on RTX 4090, benchmarked)"
   },
   "hardware": {
     "device": "cuda",
