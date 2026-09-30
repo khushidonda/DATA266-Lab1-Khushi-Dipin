@@ -134,6 +134,54 @@ The class script uses torchvision's ImageNet Inception with 299-pixel resizing, 
 4. **Visual quality.** Photo→Monet reliably produces Monet's palette (lilac and blue shadows, warm highlights) and a brushed surface texture while keeping the scene layout, and works best on textured natural scenes (forests, fields, water). It stylises only moderately: brushstroke-level repainting is limited, which is expected with λ_id = 5. Monet→photo produces plausible skies and contrast but leaves some brush texture, and returns the most realistic Monet works almost unchanged.
 5. **Metric asymmetries.** A2B precision is low (0.364) but coverage is high (0.807): the translations spread over the Monet feature manifold, but many fall outside the tight k-NN balls of only 300 real paintings, so precision is pessimistic with such a small reference set. B2A shows the opposite pattern (precision 0.670, recall 0.338): generated photos look realistic but only cover the part of photo space reachable from 300 paintings.
 
+## Improvement experiment: v2 (not submitted)
+The v1 analysis identified four problems, and v2 changes exactly those four things. Everything else is identical to v1: data split, seed, 50 epochs, learning-rate schedule and batch size. The config is `configs/task3_config_v2.json`, and the outputs are in `outputs/v2/` and `checkpoints/v2/`. The recipe was committed before any v2 results existed.
+
+| v1 finding | v2 change |
+|---|---|
+| Weak stylisation | Identity weight λ_id 5 → 1 |
+| D_B overfits 270 paintings | DiffAugment (colour, translation, cutout; Zhao et al., 2020) on every discriminator input |
+| D_B collapses after single D-gradient spikes | Clip D's global gradient norm at 15 |
+| Checkerboard artifacts | Nearest ×2 upsample + 3×3 conv instead of `ConvTranspose2d` (same 28,273,544 parameters) |
+
+**Model choice.** Both runs were scored with the same held-out protocol and the pre-set rule (lowest mean KID over both directions). v2's own sweep selects its epoch 40.
+
+| | Mean KID ↓ | FID A2B ↓ | KID A2B | FID B2A ↓ | KID B2A |
+|---|---|---|---|---|---|
+| **v1, epoch 50 (submitted)** | **0.0155** | 94.91 | **0.0143** | **88.11** | **0.0167** |
+| v2, epoch 40 (v2's best) | 0.0196 | 93.45 | 0.0166 | 93.62 | 0.0227 |
+| v2, epoch 50 (final) | 0.0217 | **92.03** | 0.0175 | 95.49 | 0.0260 |
+| Class script (combined FID / MiFID): v1 | | | 100.41 / 0.4054 | | |
+| Class script (combined FID / MiFID): v2 epoch 50 | | | 102.39 / 0.4016 | | |
+
+**v1 remains the submitted model.** Our held-out rule and the class script agree.
+
+**Per-direction metrics (final epochs, v1 → v2):**
+- Photo→Monet:
+  - FID 94.9 → **92.0**
+  - Precision 0.364 → 0.428
+  - Recall 0.550 → 0.497
+  - LPIPS between input and translation 0.372 → 0.417 (more change)
+  - LPIPS between input and reconstruction 0.158 → 0.258 (less faithful cycle)
+- Monet→photo:
+  - FID 88.1 → 95.5
+  - Precision 0.670 → 0.597
+  - Recall 0.338 → 0.292
+  - Content cosine 0.831 → 0.801
+  - LPIPS between input and reconstruction 0.233 → 0.381
+
+**What v2 shows**
+1. **Lower λ_id gives stronger style but a less faithful cycle.** v2's photo→Monet outputs look clearly more painted (pointillist texture, pastel palettes), and it has the best photo→Monet FID of any checkpoint in either run. The price is reconstructions that are much less faithful in both directions. Monet→photo overshoots: in the fixed samples, a misty Seine becomes a saturated purple-pink sunset.
+2. **DiffAugment and clipping fixed the instability they targeted.** v2 had no discriminator collapse: D_B's smallest real-minus-fake gap was 0.102 vs 0.012 in v1, and its final real/fake scores were 0.757/0.243 instead of 0.857/0.143, so it overfit less. The largest pre-clip D gradient after warm-up was 20.0 vs 32.6. Clipping fired on 82% of steps in epoch 1, 11% by epoch 10, and 0.1% in the final epoch, so it acted as a spike guard, not a permanent lr cut. There were 0 NaN steps.
+3. **But DiffAugment on D_A was probably a mistake.** The photo critic has 6,538 real images and did not need augmentation. In v2 it was much less decisive for most of the run (mean real-minus-fake gap 0.235 vs 0.361), which weakened the pressure on Monet→photo realism. It had caught up with v1 by the final epoch (0.660/0.340 vs 0.664/0.336). Together with λ_id = 1 letting G_BA change paintings more (LPIPS 0.306 vs 0.264), this explains why v2 loses exactly in the Monet→photo direction.
+4. **The resize-conv upsampler traded one artifact for another.** Checkerboard grids are gone, but v2 produced blob artifacts instead:
+   - Epochs 5–10: dark dots at image edges and red spots.
+   - From about epoch 15: mostly gone.
+   - Final model: a small yellow dot fixed in the **top-left corner of every image**. It persists through the cycle, so both generators maintain it; this is consistent with the instance-norm "droplet" artifact described for StyleGAN.
+5. **v2 costs more.** 3.44 h vs 2.61 h, 26.4 vs 34.9 img/s, and 6.60 vs 4.88 GB peak memory, all from DiffAugment and full-resolution upsampling convolutions.
+
+**The next experiment the evidence points to (not run):** keep v2's clipping and use DiffAugment on D_B only, with λ_id around 2–3 and v1's transposed-convolution upsampler. That aims to keep v2's photo→Monet gain without its Monet→photo loss.
+
 ## Strengths and Limitations
 **Strengths**
 - Both directions improve FID and KID substantially over untranslated inputs.

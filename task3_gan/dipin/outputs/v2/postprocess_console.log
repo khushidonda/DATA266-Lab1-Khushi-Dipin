@@ -1,0 +1,57 @@
+== evaluate
+C:\Users\dipin\DATA266-Lab1-Khushi-Dipin\task3_gan\dipin\.venv\Lib\site-packages\torchvision\models\_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+C:\Users\dipin\DATA266-Lab1-Khushi-Dipin\task3_gan\dipin\.venv\Lib\site-packages\torchvision\models\_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+A2B {"FID": 92.0328, "KID": 0.0175, "KID_std": 0.002, "FID_untranslated_baseline": 126.8044, "KID_untranslated_baseline": 0.0489, "MiFID_estimate": 92.0328, "memorization_distance": 0.2398, "precision": 0.428, "recall": 0.4967, "density": 0.45, "coverage": 0.7867, "cycle_L1": 0.0497, "cycle_PSNR": 23.9631, "translation_L1": 0.1611, "LPIPS_input_vs_translation": 0.4168, "LPIPS_input_vs_reconstruction": 0.2579, "content_cosine": 0.7518, "cycle_L1_std": 0.023, "cycle_PSNR_std": 2.78, "translation_L1_std": 0.0629, "LPIPS_input_vs_translation_std": 0.09, "LPIPS_input_vs_reconstruction_std": 0.0979, "content_cosine_std": 0.0807, "n_fake": 500, "n_real_ref": 300, "n_per_image": 500, "inference_images_per_sec": 294.1438}
+B2A {"FID": 95.4933, "KID": 0.026, "KID_std": 0.0032, "FID_untranslated_baseline": 126.8044, "KID_untranslated_baseline": 0.0493, "MiFID_estimate": 95.4933, "memorization_distance": 0.2354, "precision": 0.5967, "recall": 0.292, "density": 0.734, "coverage": 0.63, "cycle_L1": 0.0612, "cycle_PSNR": 22.5151, "translation_L1": 0.0916, "LPIPS_input_vs_translation": 0.3064, "LPIPS_input_vs_reconstruction": 0.3805, "content_cosine": 0.8006, "cycle_L1_std": 0.0191, "cycle_PSNR_std": 2.1621, "translation_L1_std": 0.0345, "LPIPS_input_vs_translation_std": 0.0798, "LPIPS_input_vs_reconstruction_std": 0.0868, "content_cosine_std": 0.0663, "n_fake": 300, "n_real_ref": 500, "n_per_image": 30, "inference_images_per_sec": 309.0565}
+saved C:\Users\dipin\DATA266-Lab1-Khushi-Dipin\task3_gan\dipin\outputs\v2\eval\eval_metrics.json
+== sweep
+{'epoch': 5, 'checkpoint': 'generators_epoch005.pt', 'FID_A2B': 142.0711, 'KID_A2B': 0.0595, 'FID_B2A': 148.6641, 'KID_B2A': 0.0826, 'KID_mean': 0.0711, 'FID_mean': 145.3676}
+{'epoch': 10, 'checkpoint': 'generators_epoch010.pt', 'FID_A2B': 121.5928, 'KID_A2B': 0.0404, 'FID_B2A': 121.7549, 'KID_B2A': 0.0505, 'KID_mean': 0.0454, 'FID_mean': 121.6738}
+{'epoch': 15, 'checkpoint': 'generators_epoch015.pt', 'FID_A2B': 123.9265, 'KID_A2B': 0.0435, 'FID_B2A': 118.1021, 'KID_B2A': 0.0457, 'KID_mean': 0.0446, 'FID_mean': 121.0143}
+{'epoch': 20, 'checkpoint': 'generators_epoch020.pt', 'FID_A2B': 120.0098, 'KID_A2B': 0.0453, 'FID_B2A': 112.5975, 'KID_B2A': 0.0405, 'KID_mean': 0.0429, 'FID_mean': 116.3037}
+{'epoch': 25, 'checkpoint': 'generators_epoch025.pt', 'FID_A2B': 100.6712, 'KID_A2B': 0.0209, 'FID_B2A': 113.6883, 'KID_B2A': 0.0457, 'KID_mean': 0.0333, 'FID_mean': 107.1797}
+{'epoch': 30, 'checkpoint': 'generators_epoch030.pt', 'FID_A2B': 104.7806, 'KID_A2B': 0.0246, 'FID_B2A': 100.5714, 'KID_B2A': 0.0333, 'KID_mean': 0.0289, 'FID_mean': 102.676}
+{'epoch': 35, 'checkpoint': 'generators_epoch035.pt', 'FID_A2B': 96.096, 'KID_A2B': 0.0179, 'FID_B2A': 100.2784, 'KID_B2A': 0.0354, 'KID_mean': 0.0266, 'FID_mean': 98.1872}
+{'epoch': 40, 'checkpoint': 'generators_epoch040.pt', 'FID_A2B': 93.4529, 'KID_A2B': 0.0166, 'FID_B2A': 93.6236, 'KID_B2A': 0.0227, 'KID_mean': 0.0196, 'FID_mean': 93.5383}
+{'epoch': 45, 'checkpoint': 'generators_epoch045.pt', 'FID_A2B': 93.4003, 'KID_A2B': 0.0184, 'FID_B2A': 100.4174, 'KID_B2A': 0.0313, 'KID_mean': 0.0249, 'FID_mean': 96.9089}
+{'epoch': 50, 'checkpoint': 'generators_epoch050.pt', 'FID_A2B': 92.0328, 'KID_A2B': 0.0175, 'FID_B2A': 95.4933, 'KID_B2A': 0.026, 'KID_mean': 0.0217, 'FID_mean': 93.7631}
+{
+  "rule": "lowest mean KID over A2B and B2A on held-out data; FID mean breaks ties",
+  "selected_epoch": 40,
+  "selected_checkpoint": "generators_epoch040.pt",
+  "KID_A2B": 0.016598173006101627,
+  "KID_B2A": 0.022665433237730667,
+  "KID_mean": 0.019631803121916147,
+  "FID_A2B": 93.45291622932675,
+  "FID_B2A": 93.62363107459083,
+  "FID_mean": 93.53827365195879
+}
+== class predictions
+{
+  "pred_A2B": {
+    "direction": "Monet -> photo",
+    "generator": "checkpoints/G_BA.pt",
+    "generator_sha256": "c00dcc22e32f8cec62ff913f294677cfdbd35035a47042729c36e3727e09dd7f",
+    "inputs": "all 300 monet_jpg",
+    "n": 300
+  },
+  "pred_B2A": {
+    "direction": "photo -> Monet",
+    "generator": "checkpoints/G_AB.pt",
+    "generator_sha256": "57df58dce7cce286e11ff3f4b91ad0ad82e26045c97cfc175febf1e3efa7e07c",
+    "inputs": "500 held-out test photos (data_processed/splits.json)",
+    "n": 500
+  },
+  "post_processing": "none"
+}
+== class eval
+[NbConvertApp] Converting notebook outputs/v2/class_kaggle/class_eval_run_v2.ipynb to notebook
+C:\Users\dipin\DATA266-Lab1-Khushi-Dipin\task3_gan\dipin\.venv\Lib\site-packages\zmq\_future.py:718: RuntimeWarning: Proactor event loop does not implement add_reader family of methods required for zmq. Registering an additional selector thread for add_reader support via tornado. Use `asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())` to avoid this warning.
+  self._get_loop()
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[NbConvertApp] Writing 20951 bytes to outputs\v2\class_kaggle\class_eval_run_v2.ipynb
+ID,FID,MiFID
+1,102.38558632624284,0.4015621691942215
+== done

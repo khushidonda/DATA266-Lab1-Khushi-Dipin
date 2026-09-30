@@ -1,0 +1,30 @@
+{
+  "run_id": "task3_dipin_full_20260929_174752",
+  "epochs": 50,
+  "steps": 81750,
+  "batch_size": 4,
+  "train_seconds": 12389.007577896118,
+  "train_hours": 3.4413909938600327,
+  "images_per_sec": 26.394365968700992,
+  "peak_memory_gb_since_last_start": 6.604156970977783,
+  "nan_count_total": 0,
+  "params": {
+    "G_AB": 11372931,
+    "G_BA": 11372931,
+    "D_A": 2763841,
+    "D_B": 2763841,
+    "total": 28273544
+  },
+  "hardware": {
+    "device": "cuda",
+    "python": "3.13.2",
+    "torch": "2.11.0+cu128",
+    "platform": "Windows-11-10.0.22631-SP0",
+    "cpu": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "gpu_memory_gb": 25.76,
+    "cuda": "12.8",
+    "cudnn": 91900
+  },
+  "raw_log": "outputs/v2/logs/task3_dipin_full_20260929_174752.jsonl"
+}

@@ -17,3 +17,7 @@ checkpoints/v2/smoke/
 outputs/v2/smoke/
 outputs/v2/kaggle_submission/images/
 outputs/v2/kaggle_submission/images.zip
+# v2 is not the submitted model: keep its image dumps local (per-image metrics are committed)
+outputs/v2/translations/
+outputs/v2/class_kaggle/pred_A2B/
+outputs/v2/class_kaggle/pred_B2A/

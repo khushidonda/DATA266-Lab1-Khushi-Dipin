@@ -1,0 +1,81 @@
+A(photo) train 6538 test 500 | B(Monet) train 270 test 30
+[task3_dipin_full_20260929_174752] epoch 1/50 G 6.024 cyc 0.470 D_A 0.289 D_B 0.278 | 25.8 img/s, 253s, nan 0
+[task3_dipin_full_20260929_174752] epoch 2/50 G 4.898 cyc 0.378 D_A 0.244 D_B 0.243 | 26.9 img/s, 243s, nan 0
+[task3_dipin_full_20260929_174752] epoch 3/50 G 4.502 cyc 0.341 D_A 0.242 D_B 0.236 | 26.9 img/s, 243s, nan 0
+[task3_dipin_full_20260929_174752] epoch 4/50 G 4.302 cyc 0.319 D_A 0.237 D_B 0.226 | 26.6 img/s, 245s, nan 0
+[task3_dipin_full_20260929_174752] epoch 5/50 G 4.210 cyc 0.306 D_A 0.233 D_B 0.211 | 26.7 img/s, 245s, nan 0
+[task3_dipin_full_20260929_174752] epoch 6/50 G 3.993 cyc 0.284 D_A 0.231 D_B 0.208 | 26.6 img/s, 246s, nan 0
+[task3_dipin_full_20260929_174752] epoch 7/50 G 3.863 cyc 0.272 D_A 0.230 D_B 0.206 | 26.6 img/s, 246s, nan 0
+[task3_dipin_full_20260929_174752] epoch 8/50 G 3.754 cyc 0.261 D_A 0.227 D_B 0.204 | 26.6 img/s, 246s, nan 0
+[task3_dipin_full_20260929_174752] epoch 9/50 G 4.004 cyc 0.277 D_A 0.220 D_B 0.183 | 26.6 img/s, 246s, nan 0
+[task3_dipin_full_20260929_174752] epoch 10/50 G 3.703 cyc 0.253 D_A 0.221 D_B 0.196 | 26.6 img/s, 246s, nan 0
+[task3_dipin_full_20260929_174752] epoch 11/50 G 3.642 cyc 0.248 D_A 0.220 D_B 0.193 | 26.4 img/s, 248s, nan 0
+[task3_dipin_full_20260929_174752] epoch 12/50 G 3.657 cyc 0.246 D_A 0.218 D_B 0.192 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 13/50 G 3.610 cyc 0.243 D_A 0.213 D_B 0.197 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 14/50 G 3.483 cyc 0.233 D_A 0.215 D_B 0.196 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 15/50 G 3.661 cyc 0.243 D_A 0.211 D_B 0.182 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 16/50 G 3.582 cyc 0.239 D_A 0.211 D_B 0.192 | 25.6 img/s, 256s, nan 0
+[task3_dipin_full_20260929_174752] epoch 17/50 G 3.382 cyc 0.223 D_A 0.213 D_B 0.200 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 18/50 G 3.348 cyc 0.218 D_A 0.212 D_B 0.188 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 19/50 G 3.271 cyc 0.213 D_A 0.212 D_B 0.193 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 20/50 G 3.200 cyc 0.207 D_A 0.213 D_B 0.192 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 21/50 G 3.218 cyc 0.204 D_A 0.210 D_B 0.183 | 25.5 img/s, 256s, nan 0
+[task3_dipin_full_20260929_174752] epoch 22/50 G 3.122 cyc 0.202 D_A 0.213 D_B 0.198 | 26.6 img/s, 246s, nan 0
+[task3_dipin_full_20260929_174752] epoch 23/50 G 3.090 cyc 0.197 D_A 0.214 D_B 0.194 | 26.6 img/s, 246s, nan 0
+[task3_dipin_full_20260929_174752] epoch 24/50 G 3.070 cyc 0.194 D_A 0.209 D_B 0.189 | 26.6 img/s, 246s, nan 0
+[task3_dipin_full_20260929_174752] epoch 25/50 G 3.033 cyc 0.190 D_A 0.210 D_B 0.189 | 26.5 img/s, 246s, nan 0
+[task3_dipin_full_20260929_174752] epoch 26/50 G 3.053 cyc 0.190 D_A 0.206 D_B 0.181 | 25.5 img/s, 256s, nan 0
+[task3_dipin_full_20260929_174752] epoch 27/50 G 2.971 cyc 0.185 D_A 0.203 D_B 0.185 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 28/50 G 2.989 cyc 0.181 D_A 0.199 D_B 0.177 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 29/50 G 2.988 cyc 0.179 D_A 0.196 D_B 0.171 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 30/50 G 2.957 cyc 0.175 D_A 0.191 D_B 0.165 | 26.4 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 31/50 G 2.938 cyc 0.173 D_A 0.190 D_B 0.166 | 25.6 img/s, 255s, nan 0
+[task3_dipin_full_20260929_174752] epoch 32/50 G 2.931 cyc 0.170 D_A 0.187 D_B 0.160 | 26.4 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 33/50 G 2.920 cyc 0.168 D_A 0.184 D_B 0.157 | 26.4 img/s, 248s, nan 0
+[task3_dipin_full_20260929_174752] epoch 34/50 G 2.905 cyc 0.167 D_A 0.181 D_B 0.159 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 35/50 G 2.862 cyc 0.164 D_A 0.181 D_B 0.159 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 36/50 G 2.844 cyc 0.162 D_A 0.188 D_B 0.157 | 25.5 img/s, 257s, nan 0
+[task3_dipin_full_20260929_174752] epoch 37/50 G 2.797 cyc 0.159 D_A 0.190 D_B 0.152 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 38/50 G 2.783 cyc 0.156 D_A 0.185 D_B 0.151 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 39/50 G 2.780 cyc 0.155 D_A 0.181 D_B 0.145 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 40/50 G 2.773 cyc 0.153 D_A 0.179 D_B 0.144 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 41/50 G 2.753 cyc 0.151 D_A 0.178 D_B 0.142 | 25.6 img/s, 255s, nan 0
+[task3_dipin_full_20260929_174752] epoch 42/50 G 2.757 cyc 0.149 D_A 0.175 D_B 0.139 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 43/50 G 2.721 cyc 0.146 D_A 0.174 D_B 0.136 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 44/50 G 2.724 cyc 0.144 D_A 0.173 D_B 0.131 | 26.4 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 45/50 G 2.743 cyc 0.144 D_A 0.173 D_B 0.128 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 46/50 G 2.697 cyc 0.141 D_A 0.172 D_B 0.126 | 26.4 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 47/50 G 2.690 cyc 0.140 D_A 0.171 D_B 0.125 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 48/50 G 2.689 cyc 0.139 D_A 0.169 D_B 0.122 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 49/50 G 2.662 cyc 0.137 D_A 0.168 D_B 0.120 | 26.5 img/s, 247s, nan 0
+[task3_dipin_full_20260929_174752] epoch 50/50 G 2.645 cyc 0.136 D_A 0.166 D_B 0.117 | 26.5 img/s, 247s, nan 0
+{
+  "run_id": "task3_dipin_full_20260929_174752",
+  "epochs": 50,
+  "steps": 81750,
+  "batch_size": 4,
+  "train_seconds": 12389.007577896118,
+  "train_hours": 3.4413909938600327,
+  "images_per_sec": 26.394365968700992,
+  "peak_memory_gb_since_last_start": 6.604156970977783,
+  "nan_count_total": 0,
+  "params": {
+    "G_AB": 11372931,
+    "G_BA": 11372931,
+    "D_A": 2763841,
+    "D_B": 2763841,
+    "total": 28273544
+  },
+  "hardware": {
+    "device": "cuda",
+    "python": "3.13.2",
+    "torch": "2.11.0+cu128",
+    "platform": "Windows-11-10.0.22631-SP0",
+    "cpu": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "gpu_memory_gb": 25.76,
+    "cuda": "12.8",
+    "cudnn": 91900
+  },
+  "raw_log": "outputs/v2/logs/task3_dipin_full_20260929_174752.jsonl"
+}
