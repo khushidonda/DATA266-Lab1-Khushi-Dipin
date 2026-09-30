@@ -43,10 +43,10 @@ def main():
     save(translate(G_AB, photos, device), photo_names, out / "pred_B2A")
 
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
-    info = {"pred_A2B": {"direction": "Monet -> photo", "generator": "checkpoints/G_BA.pt",
+    info = {"pred_A2B": {"direction": "Monet -> photo", "generator": (CKPT / "G_BA.pt").relative_to(DIPIN).as_posix(),
                          "generator_sha256": sha(CKPT / "G_BA.pt"), "inputs": "all 300 monet_jpg",
                          "n": len(monet_names)},
-            "pred_B2A": {"direction": "photo -> Monet", "generator": "checkpoints/G_AB.pt",
+            "pred_B2A": {"direction": "photo -> Monet", "generator": (CKPT / "G_AB.pt").relative_to(DIPIN).as_posix(),
                          "generator_sha256": sha(CKPT / "G_AB.pt"),
                          "inputs": "500 held-out test photos (data_processed/splits.json)",
                          "n": len(photo_names)},

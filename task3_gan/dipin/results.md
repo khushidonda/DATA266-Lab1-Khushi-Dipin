@@ -110,13 +110,17 @@ The final checkpoint is the best, so the submitted model is unchanged. Photo→M
 | NaN / Inf steps | **0** over 81,750 steps |
 
 ### Class Kaggle competition
-We ran the class-provided `Part3_Evaluation_Script.ipynb` as a copy (`outputs/class_kaggle/class_eval_run.ipynb`). Only the folder paths were changed, plus a SciPy-compatible `sqrtm` call with the same result. The script names the domains the other way round, so its `pred_A2B` (Monet→photo) is our `G_BA` applied to all 300 paintings, and its `pred_B2A` (photo→Monet) is our `G_AB` applied to the 500 held-out photos. The predictions are raw generator outputs; the generator SHA-256 hashes are in `predictions_info.json`.
+**Submitted: v2** (see "Improvement experiment: v2" below). The class-provided `Part3_Evaluation_Script.ipynb` was run with only its folder paths changed, plus a SciPy-compatible `sqrtm` call with the same result. It points at `outputs/v2/class_kaggle/pred_A2B` and `pred_B2A` and writes `submission.csv`.
 
-| Direction (class naming) | FID | "MiFID" (class script) |
-|---|---|---|
-| Photo → Monet (B2A) | 102.43 | 0.3976 |
-| Monet → photo (A2B) | 98.38 | 0.4131 |
-| **submission.csv (mean)** | **100.41** | **0.4054** |
+The script names the domains the other way round, so its `pred_A2B` (Monet→photo) is our `G_BA` applied to all 300 paintings, and its `pred_B2A` (photo→Monet) is our `G_AB` applied to the 500 held-out photos. The predictions are raw generator outputs of v2's final (epoch-50) weights, `checkpoints/v2/G_AB.pt` and `G_BA.pt`, and their SHA-256 hashes are in `outputs/v2/class_kaggle/predictions_info.json`. The same script was also run on v1 (`outputs/class_kaggle/`).
+
+| Direction (class naming) | v1 FID | v1 "MiFID" | **v2 FID (submitted)** | **v2 "MiFID" (submitted)** |
+|---|---|---|---|---|
+| Photo → Monet (B2A) | 102.43 | 0.3976 | 99.90 | 0.3913 |
+| Monet → photo (A2B) | 98.38 | 0.4131 | 104.87 | 0.4118 |
+| **submission.csv (mean)** | 100.41 | 0.4054 | **102.39** | **0.4016** |
+
+The switch to v2 was the team's choice after comparing the two runs. By our pre-set held-out rule (mean KID) and by the class script's FID, v1 scores better. v2 has the better photo→Monet FID, the lower class-script "MiFID", and visibly stronger Monet style.
 
 The class script uses torchvision's ImageNet Inception with 299-pixel resizing, so its FID differs from ours (94.9 / 88.1). Its "MiFID" is the mean cosine distance between index-paired features, not Kaggle's memorization-penalised FID.
 
@@ -134,7 +138,7 @@ The class script uses torchvision's ImageNet Inception with 299-pixel resizing, 
 4. **Visual quality.** Photo→Monet reliably produces Monet's palette (lilac and blue shadows, warm highlights) and a brushed surface texture while keeping the scene layout, and works best on textured natural scenes (forests, fields, water). It stylises only moderately: brushstroke-level repainting is limited, which is expected with λ_id = 5. Monet→photo produces plausible skies and contrast but leaves some brush texture, and returns the most realistic Monet works almost unchanged.
 5. **Metric asymmetries.** A2B precision is low (0.364) but coverage is high (0.807): the translations spread over the Monet feature manifold, but many fall outside the tight k-NN balls of only 300 real paintings, so precision is pessimistic with such a small reference set. B2A shows the opposite pattern (precision 0.670, recall 0.338): generated photos look realistic but only cover the part of photo space reachable from 300 paintings.
 
-## Improvement experiment: v2 (not submitted)
+## Improvement experiment: v2 (submitted to Kaggle)
 The v1 analysis identified four problems, and v2 changes exactly those four things. Everything else is identical to v1: data split, seed, 50 epochs, learning-rate schedule and batch size. The config is `configs/task3_config_v2.json`, and the outputs are in `outputs/v2/` and `checkpoints/v2/`. The recipe was committed before any v2 results existed.
 
 | v1 finding | v2 change |
@@ -154,7 +158,7 @@ The v1 analysis identified four problems, and v2 changes exactly those four thin
 | Class script (combined FID / MiFID): v1 | | | 100.41 / 0.4054 | | |
 | Class script (combined FID / MiFID): v2 epoch 50 | | | 102.39 / 0.4016 | | |
 
-**v1 remains the submitted model.** Our held-out rule and the class script agree.
+By the pre-set rule, and by the class script's combined FID, v1 is the better model. **v2 (final epoch 50) was nevertheless chosen as the Kaggle submission,** for its stronger stylisation, better photo→Monet FID and lower class-script "MiFID". The numbers above are reported unchanged either way. Unless marked v2, the evaluation tables earlier in this file describe v1.
 
 **Per-direction metrics (final epochs, v1 → v2):**
 - Photo→Monet:

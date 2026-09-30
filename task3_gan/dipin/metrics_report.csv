@@ -32,5 +32,5 @@ overall,parameter_count,28273544,"G_AB 11372931, G_BA 11372931, D_A 2763841, D_B
 overall,training_time,2.606,hours on NVIDIA GeForce RTX 4090; 81750 steps x batch 4
 overall,images_per_sec,34.85,training (paired A+B sample per image); inference A2B 350.7 img/s
 overall,peak_memory_usage,4.879,"GB, torch.cuda.max_memory_allocated during training"
-overall,kaggle_public_score,,pending submission
-overall,kaggle_private_score,,pending submission
+overall,kaggle_public_score,,"pending - submission.csv from v2 (checkpoints/v2, epoch 50); class-script FID 102.39 / MiFID 0.4016; all other rows describe v1 unless noted"
+overall,kaggle_private_score,,"pending - submission.csv from v2 (checkpoints/v2, epoch 50); class-script FID 102.39 / MiFID 0.4016; all other rows describe v1 unless noted"
