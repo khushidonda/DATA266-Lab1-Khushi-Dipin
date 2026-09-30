@@ -1,0 +1,27 @@
+== evaluate
+C:\Users\dipin\DATA266-Lab1-Khushi-Dipin\task3_gan\dipin\.venv\Lib\site-packages\torchvision\models\_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+C:\Users\dipin\DATA266-Lab1-Khushi-Dipin\task3_gan\dipin\.venv\Lib\site-packages\torchvision\models\_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+A2B {"FID": 94.9071, "KID": 0.0143, "KID_std": 0.0021, "FID_untranslated_baseline": 126.8044, "KID_untranslated_baseline": 0.0489, "MiFID_estimate": 94.9071, "memorization_distance": 0.2453, "precision": 0.364, "recall": 0.55, "density": 0.4148, "coverage": 0.8067, "cycle_L1": 0.0462, "cycle_PSNR": 24.9187, "translation_L1": 0.1475, "LPIPS_input_vs_translation": 0.3715, "LPIPS_input_vs_reconstruction": 0.1577, "content_cosine": 0.7573, "cycle_L1_std": 0.0215, "cycle_PSNR_std": 2.6729, "translation_L1_std": 0.0597, "LPIPS_input_vs_translation_std": 0.1148, "LPIPS_input_vs_reconstruction_std": 0.0562, "content_cosine_std": 0.1003, "n_fake": 500, "n_real_ref": 300, "n_per_image": 500, "inference_images_per_sec": 350.6909}
+B2A {"FID": 88.1082, "KID": 0.0167, "KID_std": 0.0024, "FID_untranslated_baseline": 126.8044, "KID_untranslated_baseline": 0.0493, "MiFID_estimate": 88.1082, "memorization_distance": 0.234, "precision": 0.67, "recall": 0.338, "density": 0.8453, "coverage": 0.72, "cycle_L1": 0.0603, "cycle_PSNR": 22.9811, "translation_L1": 0.0875, "LPIPS_input_vs_translation": 0.2635, "LPIPS_input_vs_reconstruction": 0.2325, "content_cosine": 0.8306, "cycle_L1_std": 0.02, "cycle_PSNR_std": 2.3939, "translation_L1_std": 0.0482, "LPIPS_input_vs_translation_std": 0.1223, "LPIPS_input_vs_reconstruction_std": 0.0717, "content_cosine_std": 0.0914, "n_fake": 300, "n_real_ref": 500, "n_per_image": 30, "inference_images_per_sec": 360.5209}
+saved C:\Users\dipin\DATA266-Lab1-Khushi-Dipin\task3_gan\dipin\outputs\eval\eval_metrics.json
+== submission
+{
+  "n_images": 7038,
+  "image_size": 256,
+  "zip": "outputs/kaggle_submission/images.zip",
+  "zip_sha256": "b80c0d5010ee4467c87d53381d8f9b59dfc8829402f7c8a9004aea929634a2e3",
+  "generator": "checkpoints/G_AB.pt",
+  "generator_sha256": "c4e2f8cb211b564f2e94c8c5b8bbb699af698babf0ea073b8b2e8cfb145df1e5",
+  "source": "direct G_AB inference on every photo_jpg image, no post-processing"
+}
+== audit
+prepared 30 samples in C:\Users\dipin\DATA266-Lab1-Khushi-Dipin\task3_gan\dipin\outputs\human_audit
+== notebook
+[NbConvertApp] Converting notebook task3_dipin.ipynb to notebook
+C:\Users\dipin\DATA266-Lab1-Khushi-Dipin\task3_gan\dipin\.venv\Lib\site-packages\zmq\_future.py:718: RuntimeWarning: Proactor event loop does not implement add_reader family of methods required for zmq. Registering an additional selector thread for add_reader support via tornado. Use `asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())` to avoid this warning.
+  self._get_loop()
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[NbConvertApp] Writing 25296000 bytes to task3_dipin.ipynb
+== done

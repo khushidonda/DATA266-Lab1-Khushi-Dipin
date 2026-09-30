@@ -1,0 +1,9 @@
+{
+  "n_images": 7038,
+  "image_size": 256,
+  "zip": "outputs/kaggle_submission/images.zip",
+  "zip_sha256": "b80c0d5010ee4467c87d53381d8f9b59dfc8829402f7c8a9004aea929634a2e3",
+  "generator": "checkpoints/G_AB.pt",
+  "generator_sha256": "c4e2f8cb211b564f2e94c8c5b8bbb699af698babf0ea073b8b2e8cfb145df1e5",
+  "source": "direct G_AB inference on every photo_jpg image, no post-processing"
+}
