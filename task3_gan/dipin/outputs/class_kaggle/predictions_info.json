@@ -1,0 +1,17 @@
+{
+  "pred_A2B": {
+    "direction": "Monet -> photo",
+    "generator": "checkpoints/G_BA.pt",
+    "generator_sha256": "f54270fa9114e690f94a196bfc8db83d4b2ecff3294207214e5e5349a9fca374",
+    "inputs": "all 300 monet_jpg",
+    "n": 300
+  },
+  "pred_B2A": {
+    "direction": "photo -> Monet",
+    "generator": "checkpoints/G_AB.pt",
+    "generator_sha256": "c4e2f8cb211b564f2e94c8c5b8bbb699af698babf0ea073b8b2e8cfb145df1e5",
+    "inputs": "500 held-out test photos (data_processed/splits.json)",
+    "n": 500
+  },
+  "post_processing": "none"
+}
