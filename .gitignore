@@ -29,6 +29,11 @@ Thumbs.db
 *.h5
 *.hdf5
 
+# Khushi Task 3 CycleGAN training checkpoints (~340 MB each, over GitHub's
+# 100 MB file limit). Only the .pt weights are ignored; SHA-256 hashes are
+# recorded in the raw logs/manifests.
+task3_gan/khushi/checkpoints/**/*.pt
+
 # Virtual environments
 .venv/
 venv/

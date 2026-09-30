@@ -43,6 +43,26 @@ from utils import (
 )
 
 
+# Routine per-step train_step telemetry is written every TELEMETRY_EVERY
+# optimizer steps (by global_step) to keep the 1.4M-step raw log under
+# GitHub's 100 MB file limit. Logging only -- every step still computes all
+# losses, runs every optimizer update, and runs every finite/NaN check;
+# run_start/resumed/epoch_end/checkpoint_saved/nan_detected/run_aborted/
+# run_end records are always written immediately.
+TELEMETRY_EVERY = 50
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+
+
+def _log_path(path):
+    """Repo-relative path for raw-log records (committed files must not
+    contain personal absolute paths); falls back to the path as given."""
+    try:
+        return Path(path).resolve().relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return str(path)
+
+
 class TrainingDiverged(RuntimeError):
     """Raised after a NaN/Inf event has already been logged, so callers
     never need to log it themselves -- the failure record survives even
@@ -125,7 +145,12 @@ def _check_finite_logged(value, component, epoch, global_step, logger):
     raise TrainingDiverged(f"Non-finite value detected for '{component}' at step {global_step}: {value}")
 
 
-def train_one_step(batch, models, optimizers, pools, training_cfg, device, epoch, global_step, logger=None):
+def train_one_step(batch, models, optimizers, pools, training_cfg, device, epoch, global_step, logger=None,
+                   compute_telemetry=True):
+    """compute_telemetry=False skips only the D_A/D_B gradient norms, which
+    are pure telemetry (no clipping, no finite check, no effect on any
+    update) and are returned as None. grad_norm_G is always computed
+    because it feeds the per-step finite/NaN check."""
     real_A = batch["A"].to(device)  # Monet
     real_B = batch["B"].to(device)  # Photo
 
@@ -183,7 +208,7 @@ def train_one_step(batch, models, optimizers, pools, training_cfg, device, epoch
         models["D_A"](real_A), models["D_A"](fake_A_for_D)
     )
     loss_D_A.backward()
-    grad_norm_D_A = compute_grad_norm(models["D_A"].parameters())
+    grad_norm_D_A = compute_grad_norm(models["D_A"].parameters()) if compute_telemetry else None
     _check_finite_logged(loss_D_A.item(), "loss_D_A", epoch, global_step, logger)
     optimizers["D_A"].step()
 
@@ -194,7 +219,7 @@ def train_one_step(batch, models, optimizers, pools, training_cfg, device, epoch
         models["D_B"](real_B), models["D_B"](fake_B_for_D)
     )
     loss_D_B.backward()
-    grad_norm_D_B = compute_grad_norm(models["D_B"].parameters())
+    grad_norm_D_B = compute_grad_norm(models["D_B"].parameters()) if compute_telemetry else None
     _check_finite_logged(loss_D_B.item(), "loss_D_B", epoch, global_step, logger)
     optimizers["D_B"].step()
 
@@ -221,7 +246,7 @@ def train_one_step(batch, models, optimizers, pools, training_cfg, device, epoch
 def run_training(monet_dir, photo_dir, config, device, logger, run_id,
                   max_epochs=None, max_steps_per_epoch=None,
                   checkpoint_dir=CHECKPOINT_DIR, checkpoint_every_epochs=1,
-                  resume_from=None):
+                  resume_from=None, stop_after_epoch=None, telemetry_every=TELEMETRY_EVERY):
     """Full training driver. max_epochs / max_steps_per_epoch are
     execution-only overrides for smoke testing -- not new hyperparameter
     choices. Epoch/step counts otherwise come entirely from the locked
@@ -237,7 +262,14 @@ def run_training(monet_dir, photo_dir, config, device, logger, run_id,
     `resumed_epoch`, `resumed_global_step`, and `checkpoint_sha256` so the
     two logs are traceably linked. `run_id` still controls where new
     checkpoints are written (checkpoints/<run_id>/...) and may be the same
-    as the original run's, since epoch numbers only advance from here."""
+    as the original run's, since epoch numbers only advance from here.
+
+    stop_after_epoch: optional human-facing (1-indexed) epoch number. The
+    process exits cleanly once that epoch has finished and its checkpoint
+    has been saved (stop_after_epoch=5 -> checkpoints/<run_id>/epoch_4.pt).
+    It only controls when this process exits: the epoch count, scheduler,
+    and LR values still come from the locked config (200 epochs), so
+    resuming the saved checkpoint continues the original schedule."""
     training_cfg = config["training"]
     seed = config["seed"]
 
@@ -266,14 +298,22 @@ def run_training(monet_dir, photo_dir, config, device, logger, run_id,
         )
         start_epoch = checkpoint["epoch"] + 1
         global_step = checkpoint["global_step"]
+
+    if stop_after_epoch is not None and not (start_epoch + 1 <= stop_after_epoch <= epochs):
+        raise ValueError(f"stop_after_epoch={stop_after_epoch} must be between the next epoch to run "
+                         f"({start_epoch + 1}) and the configured final epoch ({epochs}).")
+
+    if resume_from is not None:
         logger.log({
             "type": "resumed",
-            "resume_from": str(resume_from),
+            "resume_from": _log_path(resume_from),
             "resumed_epoch": checkpoint["epoch"],
             "resumed_global_step": global_step,
             "checkpoint_sha256": checkpoint_sha256,
             "parameter_counts": param_counts,
             "device": str(device),
+            "telemetry_every": telemetry_every,
+            "stop_after_epoch": stop_after_epoch,
         })
     else:
         logger.log({
@@ -283,77 +323,115 @@ def run_training(monet_dir, photo_dir, config, device, logger, run_id,
             "device": str(device),
             "dataset_sizes": {"monet": len(dataset.monet_paths), "photo": len(dataset.photo_paths)},
             "epoch_length": len(dataset),
+            "telemetry_every": telemetry_every,
+            "stop_after_epoch": stop_after_epoch,
         })
 
-    for epoch in range(start_epoch, epochs):  # epoch here is 0-indexed; user-facing "epoch N" = epoch index N-1
-        epoch_start = time.time()
-        epoch_losses = {}
-        n_batches = 0
+    epoch = start_epoch
+    try:
+        for epoch in range(start_epoch, epochs):  # epoch here is 0-indexed; user-facing "epoch N" = epoch index N-1
+            epoch_start = time.time()
+            epoch_losses = {}
+            n_batches = 0
 
-        for batch_idx, batch in enumerate(loader):
-            if max_steps_per_epoch is not None and batch_idx >= max_steps_per_epoch:
-                break
+            for batch_idx, batch in enumerate(loader):
+                if max_steps_per_epoch is not None and batch_idx >= max_steps_per_epoch:
+                    break
 
-            step_start = time.time()
-            step_result = train_one_step(batch, models, optimizers, pools, training_cfg, device,
-                                          epoch, global_step, logger=logger)
-            step_seconds = time.time() - step_start
+                log_this_step = global_step % telemetry_every == 0
 
-            mem = gpu_memory_bytes(device)
-            current_lr = optimizers["G"].param_groups[0]["lr"]
+                step_start = time.time()
+                step_result = train_one_step(batch, models, optimizers, pools, training_cfg, device,
+                                              epoch, global_step, logger=logger,
+                                              compute_telemetry=log_this_step)
+                step_seconds = time.time() - step_start
 
-            record = {
-                "type": "train_step",
+                if log_this_step:
+                    mem = gpu_memory_bytes(device)
+                    current_lr = optimizers["G"].param_groups[0]["lr"]
+
+                    record = {
+                        "type": "train_step",
+                        "epoch": epoch,
+                        "global_step": global_step,
+                        "batch_idx": batch_idx,
+                        "learning_rate": current_lr,
+                        "images_per_sec": (1.0 / step_seconds) if step_seconds > 0 else float("inf"),
+                        "gpu_memory_allocated_bytes": mem["allocated"],
+                        "gpu_memory_reserved_bytes": mem["reserved"],
+                    }
+                    record.update(step_result)
+                    logger.log(record)
+
+                # Losses are averaged over every step; D grad norms only over
+                # the telemetry steps where they were computed.
+                for k, v in step_result.items():
+                    if v is not None:
+                        epoch_losses.setdefault(k, []).append(v)
+                n_batches += 1
+                global_step += 1
+
+            for scheduler in schedulers.values():
+                scheduler.step()
+
+            epoch_seconds = time.time() - epoch_start
+            epoch_summary = {k: sum(v) / len(v) for k, v in epoch_losses.items() if v}
+            logger.log({
+                "type": "epoch_end",
                 "epoch": epoch,
                 "global_step": global_step,
-                "batch_idx": batch_idx,
-                "learning_rate": current_lr,
-                "images_per_sec": (1.0 / step_seconds) if step_seconds > 0 else float("inf"),
-                "gpu_memory_allocated_bytes": mem["allocated"],
-                "gpu_memory_reserved_bytes": mem["reserved"],
-            }
-            record.update(step_result)
-            logger.log(record)
-
-            for k, v in step_result.items():
-                epoch_losses.setdefault(k, []).append(v)
-            n_batches += 1
-            global_step += 1
-
-        for scheduler in schedulers.values():
-            scheduler.step()
-
-        epoch_seconds = time.time() - epoch_start
-        epoch_summary = {k: sum(v) / len(v) for k, v in epoch_losses.items() if v}
-        logger.log({
-            "type": "epoch_end",
-            "epoch": epoch,
-            "epoch_seconds": epoch_seconds,
-            "n_batches": n_batches,
-            "images_per_sec": (n_batches / epoch_seconds) if epoch_seconds > 0 else float("inf"),
-            **{f"mean_{k}": v for k, v in epoch_summary.items()},
-        })
-        print(f"[epoch {epoch}] loss_G={epoch_summary.get('loss_G', float('nan')):.4f} "
-              f"loss_D_A={epoch_summary.get('loss_D_A', float('nan')):.4f} "
-              f"loss_D_B={epoch_summary.get('loss_D_B', float('nan')):.4f} ({epoch_seconds:.1f}s)")
-
-        if (epoch + 1) % checkpoint_every_epochs == 0 or epoch == epochs - 1:
-            checkpoint_path = Path(checkpoint_dir) / run_id / f"epoch_{epoch}.pt"
-            checksum = save_checkpoint(
-                checkpoint_path, epoch, global_step, config,
-                models=models, optimizers=optimizers, schedulers=schedulers,
-            )
-            latest_path = Path(checkpoint_dir) / run_id / "latest.pt"
-            save_checkpoint(
-                latest_path, epoch, global_step, config,
-                models=models, optimizers=optimizers, schedulers=schedulers,
-            )
-            logger.log({
-                "type": "checkpoint_saved",
-                "epoch": epoch,
-                "path": str(checkpoint_path),
-                "sha256": checksum,
+                "epoch_seconds": epoch_seconds,
+                "n_batches": n_batches,
+                "images_per_sec": (n_batches / epoch_seconds) if epoch_seconds > 0 else float("inf"),
+                "peak_gpu_memory_allocated_bytes": (torch.cuda.max_memory_allocated(device)
+                                                    if device.type == "cuda" else None),
+                **{f"mean_{k}": v for k, v in epoch_summary.items()},
             })
+            print(f"[epoch {epoch}] loss_G={epoch_summary.get('loss_G', float('nan')):.4f} "
+                  f"loss_D_A={epoch_summary.get('loss_D_A', float('nan')):.4f} "
+                  f"loss_D_B={epoch_summary.get('loss_D_B', float('nan')):.4f} ({epoch_seconds:.1f}s)",
+                  flush=True)
+
+            stop_now = stop_after_epoch is not None and epoch + 1 == stop_after_epoch
+
+            if (epoch + 1) % checkpoint_every_epochs == 0 or epoch == epochs - 1 or stop_now:
+                checkpoint_path = Path(checkpoint_dir) / run_id / f"epoch_{epoch}.pt"
+                checksum = save_checkpoint(
+                    checkpoint_path, epoch, global_step, config,
+                    models=models, optimizers=optimizers, schedulers=schedulers,
+                )
+                latest_path = Path(checkpoint_dir) / run_id / "latest.pt"
+                save_checkpoint(
+                    latest_path, epoch, global_step, config,
+                    models=models, optimizers=optimizers, schedulers=schedulers,
+                )
+                logger.log({
+                    "type": "checkpoint_saved",
+                    "epoch": epoch,
+                    "global_step": global_step,
+                    "path": _log_path(checkpoint_path),
+                    "sha256": checksum,
+                })
+
+            if stop_now:
+                logger.log({
+                    "type": "staged_stop",
+                    "stop_after_epoch": stop_after_epoch,
+                    "epoch": epoch,
+                    "global_step": global_step,
+                    "next_learning_rate": optimizers["G"].param_groups[0]["lr"],
+                })
+                break
+    except BaseException as exc:
+        # Any abort (NaN divergence, CUDA/device error, Ctrl+C, disk error)
+        # leaves a record in the raw log before propagating.
+        logger.log({
+            "type": "run_aborted",
+            "epoch": epoch,
+            "global_step": global_step,
+            "error": repr(exc),
+        })
+        raise
 
     logger.log({"type": "run_end", "global_step": global_step})
     return models, optimizers, schedulers, param_counts
@@ -373,6 +451,10 @@ def _build_arg_parser():
                               "resumed checkpoint's parent directory name when --resume is given "
                               "(so new checkpoints land alongside the old ones), or a fresh "
                               "timestamped ID for a brand-new run.")
+    parser.add_argument("--stop-after-epoch", type=int, default=None,
+                         help="Human-facing (1-indexed) epoch after which to save the normal checkpoint "
+                              "and exit cleanly, e.g. 5 -> stops after epoch_4.pt. Does NOT change the "
+                              "locked 200-epoch config or LR schedule; resume the checkpoint to continue.")
     parser.add_argument("--run", action="store_true",
                          help="Actually start training. Without this flag, only the plan is printed "
                               "(this is the safe default -- see smoke_test.py for a tiny real exercise).")
@@ -407,9 +489,11 @@ if __name__ == "__main__":
             logger = RawLogger(log_run_id)
             print(f"Resuming from {args.resume} (checkpoint dir: {original_run_id}, new log: {log_run_id})")
             run_training(args.monet_dir, args.photo_dir, config, device, logger,
-                         run_id=original_run_id, resume_from=args.resume)
+                         run_id=original_run_id, resume_from=args.resume,
+                         stop_after_epoch=args.stop_after_epoch)
         else:
             run_id = args.run_id or make_run_id("task3_full")
             logger = RawLogger(run_id)
             print(f"Starting new run {run_id}")
-            run_training(args.monet_dir, args.photo_dir, config, device, logger, run_id=run_id)
+            run_training(args.monet_dir, args.photo_dir, config, device, logger, run_id=run_id,
+                         stop_after_epoch=args.stop_after_epoch)
