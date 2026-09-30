@@ -1,0 +1,11 @@
+{
+  "rule": "lowest mean KID over A2B and B2A on held-out data; FID mean breaks ties",
+  "selected_epoch": 50,
+  "selected_checkpoint": "generators_epoch050.pt",
+  "KID_A2B": 0.014295192561461079,
+  "KID_B2A": 0.016703325256067228,
+  "KID_mean": 0.015499258908764153,
+  "FID_A2B": 94.9070995327636,
+  "FID_B2A": 88.10818777640924,
+  "FID_mean": 91.50764365458642
+}

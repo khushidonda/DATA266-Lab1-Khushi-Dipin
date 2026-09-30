@@ -80,6 +80,24 @@ The translation cuts FID by about 25% and KID by about 70% relative to untransla
 
 The constraint is implemented correctly: each generator is composed with its *inverse*, the loss matches the library, and reconstructions are 6× closer than an untrained pair gives. Only 70% for Monet happens because G_BA often changes a painting very little (translation L1 only 0.088), so the translation is already about as close to the input as the reconstruction.
 
+### Checkpoint selection (`src/checkpoint_sweep.py`, `outputs/eval/checkpoint_sweep.csv`)
+All 10 generator snapshots (every 5 epochs) were scored on the held-out protocol above. The selection rule was fixed before looking at the results: lowest KID averaged over both directions, with FID as the tie-breaker. The class-competition metric was not used for selection.
+
+| Epoch | FID A2B | FID B2A | KID A2B | KID B2A | Mean KID |
+|---|---|---|---|---|---|
+| 5 | 127.22 | 130.14 | 0.0426 | 0.0598 | 0.0512 |
+| 10 | 124.48 | 107.36 | 0.0405 | 0.0349 | 0.0377 |
+| 15 | 121.48 | 97.90 | 0.0427 | 0.0268 | 0.0348 |
+| 20 | 124.80 | 95.18 | 0.0442 | 0.0212 | 0.0327 |
+| 25 | 108.38 | 90.43 | 0.0254 | 0.0194 | 0.0224 |
+| 30 | 103.12 | 90.98 | 0.0217 | 0.0196 | 0.0207 |
+| 35 | 102.24 | 88.43 | 0.0204 | 0.0165 | 0.0184 |
+| 40 | 96.71 | 89.56 | 0.0156 | 0.0172 | 0.0164 |
+| 45 | 94.90 | 90.43 | 0.0142 | 0.0182 | 0.0162 |
+| **50 (selected)** | **94.91** | **88.11** | **0.0143** | **0.0167** | **0.0155** |
+
+The final checkpoint is the best, so the submitted model is unchanged. Photo→Monet quality barely moves during the constant-lr phase (FID about 121–127 up to epoch 20), then improves sharply once the learning rate starts decaying (108 at epoch 25, 95 by epoch 45). The Monet critic's overfitting in the second half therefore did not hurt output quality. Mean KID was still falling at epoch 50, which suggests a longer schedule would help further.
+
 ### Training losses and stability (final-epoch means; plots in `outputs/plots/`)
 | Quantity | Value |
 |---|---|
