@@ -27,7 +27,11 @@ class ResidualBlock(nn.Module):
 
 
 class ResnetGenerator(nn.Module):
-    def __init__(self, in_ch=3, out_ch=3, ngf=64, n_blocks=9):
+    """upsampling="conv_transpose" is the paper's u-block (v1); "resize_conv" is
+    nearest-neighbour x2 + 3x3 conv (Odena et al. 2016), which avoids checkerboard
+    artifacts and has the same parameter count (v2)."""
+
+    def __init__(self, in_ch=3, out_ch=3, ngf=64, n_blocks=9, upsampling="conv_transpose"):
         super().__init__()
         layers = [
             nn.ReflectionPad2d(3),
@@ -45,12 +49,13 @@ class ResnetGenerator(nn.Module):
             ch *= 2
         layers += [ResidualBlock(ch) for _ in range(n_blocks)]
         for _ in range(2):  # upsample: u128, u64
-            layers += [
-                nn.ConvTranspose2d(ch, ch // 2, 3, stride=2, padding=1,
-                                   output_padding=1, bias=False),
-                nn.InstanceNorm2d(ch // 2),
-                nn.ReLU(inplace=True),
-            ]
+            if upsampling == "resize_conv":
+                up = [nn.Upsample(scale_factor=2, mode="nearest"), nn.ReflectionPad2d(1),
+                      nn.Conv2d(ch, ch // 2, 3, bias=False)]
+            else:
+                up = [nn.ConvTranspose2d(ch, ch // 2, 3, stride=2, padding=1,
+                                         output_padding=1, bias=False)]
+            layers += up + [nn.InstanceNorm2d(ch // 2), nn.ReLU(inplace=True)]
             ch //= 2
         layers += [nn.ReflectionPad2d(3), nn.Conv2d(ch, out_ch, 7), nn.Tanh()]
         self.model = nn.Sequential(*layers)
@@ -96,10 +101,16 @@ def count_params(net):
     return sum(p.numel() for p in net.parameters())
 
 
+def build_generator(cfg):
+    g = cfg["generator"]
+    return ResnetGenerator(ngf=g["ngf"], n_blocks=g["residual_blocks"],
+                           upsampling=g.get("upsampling", "conv_transpose"))
+
+
 def build_models(cfg):
-    g, d = cfg["generator"], cfg["discriminator"]
-    G_AB = init_weights(ResnetGenerator(ngf=g["ngf"], n_blocks=g["residual_blocks"]))
-    G_BA = init_weights(ResnetGenerator(ngf=g["ngf"], n_blocks=g["residual_blocks"]))
+    d = cfg["discriminator"]
+    G_AB = init_weights(build_generator(cfg))
+    G_BA = init_weights(build_generator(cfg))
     D_A = init_weights(PatchDiscriminator(ndf=d["ndf"]))
     D_B = init_weights(PatchDiscriminator(ndf=d["ndf"]))
     return G_AB, G_BA, D_A, D_B

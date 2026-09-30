@@ -1,0 +1,64 @@
+{
+  "seed": 266,
+  "image_size": 256,
+  "data": {
+    "root": "task3_gan/data/dataset",
+    "domain_A": "photo",
+    "domain_B": "monet",
+    "test_photos": 500,
+    "test_monet": 30
+  },
+  "generator": {
+    "type": "resnet_9blocks",
+    "ngf": 64,
+    "residual_blocks": 9,
+    "padding": "reflection",
+    "normalization": "instance_norm",
+    "output_activation": "tanh",
+    "upsampling": "resize_conv"
+  },
+  "discriminator": {
+    "type": "patchgan_70x70",
+    "ndf": 64,
+    "normalization": "instance_norm",
+    "output_activation": "none (LSGAN)"
+  },
+  "training": {
+    "batch_size": 4,
+    "learning_rate": 0.0002,
+    "optimizer": "Adam",
+    "beta1": 0.5,
+    "beta2": 0.999,
+    "epochs": 50,
+    "constant_epochs": 25,
+    "decay_epochs": 25,
+    "steps_per_epoch": 1635,
+    "gan_objective": "LSGAN (MSE)",
+    "cycle_consistency_weight": 10.0,
+    "identity_loss_weight": 1.0,
+    "replay_buffer_size": 50,
+    "augmentation": {
+      "resize": 286,
+      "random_crop": 256,
+      "random_horizontal_flip": true
+    },
+    "amp_bf16": true,
+    "log_every": 100,
+    "snapshot_every": 5,
+    "epoch_definition": "one pass over the 6,538 training photos (1,635 steps x batch 4); Monet sampled independently with replacement",
+    "precision_note": "bf16 autocast for conv layers; losses, norms and optimizer state in fp32 (1.8x faster than fp32 on RTX 4090, benchmarked)",
+    "diffaugment_policy": "color,translation,cutout",
+    "d_grad_clip_norm": 15.0
+  },
+  "hardware": {
+    "device": "cuda",
+    "gpu": "NVIDIA GeForce RTX 4090 (24 GB)"
+  },
+  "run": "v2",
+  "changes_from_v1": [
+    "identity_loss_weight 5 -> 1 (stronger stylisation)",
+    "DiffAugment color,translation,cutout on every discriminator input, real and fake (D_B overfit 270 paintings in v1)",
+    "discriminator global grad-norm clipping at 15 (v1 collapses followed single D spikes of 21.6-32.6; typical 8-12)",
+    "generator upsampling ConvTranspose2d -> nearest x2 + 3x3 conv (checkerboard artifacts in v1)"
+  ]
+}

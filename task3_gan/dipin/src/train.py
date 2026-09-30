@@ -28,11 +28,11 @@ import torch.nn as nn
 from torchvision.utils import save_image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from data import (CKPT, DIPIN, OUT, GpuAugment, UnpairedSampler, load_split, make_splits,
+from data import (CFG_PATH, CKPT, DIPIN, OUT, GpuAugment, UnpairedSampler, load_split, make_splits,
                   to_model_range)
+from diffaug import diff_augment
 from models import build_models, count_params
 
-CFG_PATH = DIPIN / "configs" / "task3_config.json"
 
 
 class ImagePool:
@@ -165,6 +165,11 @@ def main():
     mse, l1 = nn.MSELoss(), nn.L1Loss()
     lam_cyc, lam_id = tr["cycle_consistency_weight"], tr["identity_loss_weight"]
     pool_A, pool_B = ImagePool(tr["replay_buffer_size"]), ImagePool(tr["replay_buffer_size"])
+    # v2 options (absent in the v1 config -> v1 behaviour): DiffAugment on every D input,
+    # and clipping of the discriminators' global gradient norm.
+    policy = tr.get("diffaugment_policy", "")
+    daug = (lambda x: diff_augment(x, policy)) if policy else (lambda x: x)
+    d_clip = tr.get("d_grad_clip_norm")
 
     start_epoch, global_step, nan_total, train_seconds = 0, 0, 0, 0.0
     run_id = f"task3_dipin_{tag}_{datetime.now():%Y%m%d_%H%M%S}"
@@ -193,6 +198,8 @@ def main():
 
     keys = ["loss_G", "loss_G_adv", "loss_cyc", "loss_id", "loss_D_A", "loss_D_B",
             "D_A_real", "D_A_fake", "D_B_real", "D_B_fake", "grad_norm_G", "grad_norm_D"]
+    if d_clip:
+        keys.append("D_clip_frac")  # share of steps where D's (pre-clip) norm exceeded the limit
     if device.type == "cuda":
         torch.cuda.reset_peak_memory_stats()
 
@@ -215,7 +222,7 @@ def main():
             with amp_ctx():
                 fake_b = G_AB(real_a); fake_a = G_BA(real_b)
                 rec_a = G_BA(fake_b); rec_b = G_AB(fake_a)
-                pred_fb = D_B(fake_b).float(); pred_fa = D_A(fake_a).float()
+                pred_fb = D_B(daug(fake_b)).float(); pred_fa = D_A(daug(fake_a)).float()
                 adv = mse(pred_fb, torch.ones_like(pred_fb)) + mse(pred_fa, torch.ones_like(pred_fa))
                 cyc = l1(rec_a.float(), real_a) + l1(rec_b.float(), real_b)
                 if lam_id > 0:
@@ -233,8 +240,8 @@ def main():
             opt_D.zero_grad(set_to_none=True)
             fa_pool = pool_A.query(fake_a.float()); fb_pool = pool_B.query(fake_b.float())
             with amp_ctx():
-                pa_real = D_A(real_a).float(); pa_fake = D_A(fa_pool).float()
-                pb_real = D_B(real_b).float(); pb_fake = D_B(fb_pool).float()
+                pa_real = D_A(daug(real_a)).float(); pa_fake = D_A(daug(fa_pool)).float()
+                pb_real = D_B(daug(real_b)).float(); pb_fake = D_B(daug(fb_pool)).float()
                 loss_D_A = 0.5 * (mse(pa_real, torch.ones_like(pa_real)) + mse(pa_fake, torch.zeros_like(pa_fake)))
                 loss_D_B = 0.5 * (mse(pb_real, torch.ones_like(pb_real)) + mse(pb_fake, torch.zeros_like(pb_fake)))
             (loss_D_A + loss_D_B).backward()
@@ -247,6 +254,9 @@ def main():
             if not all(math.isfinite(v) for v in stats):  # non-finite step: both updates skipped, counted
                 ep_nan += 1
                 continue
+            if d_clip:
+                torch.nn.utils.clip_grad_norm_(d_params, d_clip)
+                stats.append(float(stats[-1] > d_clip))
             opt_G.step(); opt_D.step()
 
             vals = dict(zip(keys, stats))

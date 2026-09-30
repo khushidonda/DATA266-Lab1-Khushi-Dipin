@@ -22,8 +22,14 @@ REPO = DIPIN.parent.parent
 # Smoke test: TASK3_SMOKE_ROOT points at a tiny synthetic dataset; splits and all
 # outputs are then redirected under outputs/smoke so real results are untouched.
 SMOKE_ROOT = os.environ.get("TASK3_SMOKE_ROOT")
-OUT = DIPIN / "outputs" / "smoke" if SMOKE_ROOT else DIPIN / "outputs"
-CKPT = DIPIN / "checkpoints" / "smoke" if SMOKE_ROOT else DIPIN / "checkpoints"
+# Experiment runs: TASK3_RUN=v2 uses configs/task3_config_v2.json and writes to
+# outputs/v2 and checkpoints/v2; unset = the original run (v1) at the top level.
+RUN = os.environ.get("TASK3_RUN", "")
+CFG_PATH = DIPIN / "configs" / (f"task3_config_{RUN}.json" if RUN else "task3_config.json")
+OUT = DIPIN / "outputs" / (RUN or "")
+CKPT = DIPIN / "checkpoints" / (RUN or "")
+if SMOKE_ROOT:
+    OUT, CKPT = OUT / "smoke", CKPT / "smoke"
 
 
 def list_images(folder):

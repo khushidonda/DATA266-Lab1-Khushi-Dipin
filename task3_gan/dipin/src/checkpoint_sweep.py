@@ -21,11 +21,11 @@ import torch
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from data import CKPT, OUT, load_split, make_splits
 from evaluate import CFG, Inception, fid, kid, translate
-from models import ResnetGenerator
+from models import build_generator
 
 
 def gen(state, device):
-    g = ResnetGenerator(ngf=CFG["generator"]["ngf"], n_blocks=CFG["generator"]["residual_blocks"])
+    g = build_generator(CFG)
     g.load_state_dict(state)
     return g.to(device).eval()
 

@@ -33,10 +33,10 @@ from PIL import Image
 from scipy import linalg
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from data import CKPT, DIPIN, OUT, load_split, make_splits, to_model_range, to_uint8
-from models import ResnetGenerator
+from data import CFG_PATH, CKPT, DIPIN, OUT, load_split, make_splits, to_model_range, to_uint8
+from models import build_generator
 
-CFG = json.loads((DIPIN / "configs" / "task3_config.json").read_text())
+CFG = json.loads(CFG_PATH.read_text())
 
 
 # ---------------------------------------------------------------- features --
@@ -106,7 +106,7 @@ def mifid(real, fake, fid_value, eps=0.1):
 
 # -------------------------------------------------------------- generators --
 def load_generator(path, device):
-    g = ResnetGenerator(ngf=CFG["generator"]["ngf"], n_blocks=CFG["generator"]["residual_blocks"])
+    g = build_generator(CFG)
     g.load_state_dict(torch.load(path, map_location=device, weights_only=True))
     return g.to(device).eval()
 
@@ -212,8 +212,8 @@ def main():
     # cycle-consistency sanity check: an untrained generator pair gives far larger L1
     from models import init_weights
     torch.manual_seed(0)
-    rnd_ab = init_weights(ResnetGenerator()).to(device).eval()
-    rnd_ba = init_weights(ResnetGenerator()).to(device).eval()
+    rnd_ab = init_weights(build_generator(CFG)).to(device).eval()
+    rnd_ba = init_weights(build_generator(CFG)).to(device).eval()
     r = translate(rnd_ba, translate(rnd_ab, A_test[:100], device), device)
     results["cycle_check"] = {
         "random_init_generators_cycle_L1_A": float((r.float() - A_test[:100].float()).abs().mean() / 255),
