@@ -34,6 +34,17 @@ Thumbs.db
 # recorded in the raw logs/manifests.
 task3_gan/khushi/checkpoints/**/*.pt
 
+# Datasets, run outputs and local backups live outside the repo; guard against
+# accidental copies being committed.
+*.zip
+**/dataset/
+**/monet_jpg/
+**/photo_jpg/
+DATA266_runs/
+DATA266_data/
+DATA266_BACKUP_*/
+DATA266_CRITICAL_UPLOAD/
+
 # Virtual environments
 .venv/
 venv/

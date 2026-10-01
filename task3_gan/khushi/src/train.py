@@ -81,13 +81,15 @@ def build_models(device):
 
 def build_optimizers(models, training_cfg):
     lr = training_cfg["learning_rate"]
+    # Optional separate discriminator LR (hyperparameter tournament); absent -> same as G (baseline).
+    d_lr = training_cfg.get("D_learning_rate", lr)
     betas = (training_cfg["beta1"], training_cfg["beta2"])
     optimizer_G = torch.optim.Adam(
         list(models["G_A2B"].parameters()) + list(models["G_B2A"].parameters()),
         lr=lr, betas=betas,
     )
-    optimizer_D_A = torch.optim.Adam(models["D_A"].parameters(), lr=lr, betas=betas)
-    optimizer_D_B = torch.optim.Adam(models["D_B"].parameters(), lr=lr, betas=betas)
+    optimizer_D_A = torch.optim.Adam(models["D_A"].parameters(), lr=d_lr, betas=betas)
+    optimizer_D_B = torch.optim.Adam(models["D_B"].parameters(), lr=d_lr, betas=betas)
     return {"G": optimizer_G, "D_A": optimizer_D_A, "D_B": optimizer_D_B}
 
 
@@ -455,6 +457,9 @@ def _build_arg_parser():
                          help="Human-facing (1-indexed) epoch after which to save the normal checkpoint "
                               "and exit cleanly, e.g. 5 -> stops after epoch_4.pt. Does NOT change the "
                               "locked 200-epoch config or LR schedule; resume the checkpoint to continue.")
+    parser.add_argument("--config", type=str, default=None,
+                         help="Config JSON to use instead of the default configs/task3_config.json. "
+                              "Its path and SHA-256 are written to the raw log.")
     parser.add_argument("--run", action="store_true",
                          help="Actually start training. Without this flag, only the plan is printed "
                               "(this is the safe default -- see smoke_test.py for a tiny real exercise).")
@@ -463,7 +468,7 @@ def _build_arg_parser():
 
 if __name__ == "__main__":
     args = _build_arg_parser().parse_args()
-    config = load_config()
+    config = load_config(args.config) if args.config else load_config()
     training_cfg = config["training"]
 
     if not args.run:
@@ -494,6 +499,9 @@ if __name__ == "__main__":
         else:
             run_id = args.run_id or make_run_id("task3_full")
             logger = RawLogger(run_id)
+            if args.config:
+                logger.log({"type": "config_manifest", "config_path": _log_path(args.config),
+                            "config_sha256": sha256_file(args.config)})
             print(f"Starting new run {run_id}")
             run_training(args.monet_dir, args.photo_dir, config, device, logger, run_id=run_id,
                          stop_after_epoch=args.stop_after_epoch)
