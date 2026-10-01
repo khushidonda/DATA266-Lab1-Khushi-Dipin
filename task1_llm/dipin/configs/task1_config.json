@@ -1,38 +1,61 @@
 {
-  "run_id": "",
-  "seed": null,
+  "member": "dipin",
+  "run_id": "task1_dipin_full",
+  "seed": 266,
 
   "data": {
+    "dataset": "roneneldan/TinyStories",
+    "source_split": "train",
     "train_size": 100000,
     "validation_size": 10000,
-    "sequence_length": null
+    "split_unit": "stories",
+    "sequence_length": 256,
+    "windowing": "stories joined into one character stream with an <eos> separator; windows of sequence_length+1 with stride sequence_length, so every character is a target exactly once per epoch",
+    "random_window_offset_per_epoch": true,
+    "min_char_count": 10,
+    "special_tokens": ["<eos>", "<unk>"]
   },
 
   "model": {
-    "embedding_dim": null,
-    "num_heads": null,
-    "num_transformer_blocks": null,
-    "feed_forward_dim": null,
-    "dropout": null
+    "embedding_dim": 256,
+    "num_heads": 8,
+    "num_transformer_blocks": 6,
+    "feed_forward_dim": 1024,
+    "dropout": 0.1,
+    "activation": "gelu",
+    "norm_placement": "pre_layernorm",
+    "positional_embedding": "learned",
+    "tie_input_output_embeddings": true,
+    "bias": false
   },
 
   "training": {
-    "batch_size": null,
-    "optimizer": "",
-    "learning_rate": null,
-    "warmup_steps": null,
-    "scheduler": "",
-    "epochs": null
+    "batch_size": 128,
+    "optimizer": "AdamW",
+    "beta1": 0.9,
+    "beta2": 0.95,
+    "weight_decay": 0.1,
+    "weight_decay_applies_to": "matrices only (no embeddings-tied bias, LayerNorm gains or biases)",
+    "learning_rate": 6e-4,
+    "min_learning_rate": 6e-5,
+    "warmup_steps": 2000,
+    "scheduler": "linear_warmup_then_cosine",
+    "epochs": 10,
+    "gradient_clip_max_norm": 1.0,
+    "amp_bf16": true,
+    "log_every": 100
   },
 
   "generation": {
-    "method": "",
-    "temperature": null,
-    "max_new_tokens": null
+    "method": "temperature",
+    "temperature": 0.8,
+    "max_new_tokens": 200,
+    "prompts": ["Once upon a time", "One day,", "Lily and Ben", "The little bird", "Tom was sad because"],
+    "samples_per_prompt": 10
   },
 
   "hardware": {
-    "device": "",
-    "gpu": ""
+    "device": "recorded at run time in the raw log and checkpoint",
+    "gpu": "recorded at run time in the raw log and checkpoint"
   }
 }
