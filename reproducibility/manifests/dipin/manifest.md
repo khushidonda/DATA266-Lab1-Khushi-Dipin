@@ -22,14 +22,17 @@ Environment file:
 
 ## Task 1 — GPT-Style LLM
 
+Machine-readable mapping (run ID → raw log → checkpoint → metrics) is written by the notebook to
+`reproducibility/manifests/dipin/task1_manifest.json`; environment to `environment_task1.txt`.
+
 ### Final Run
-- Run ID:
-- Config file:
-- Raw log:
-- Checkpoint:
-- Metrics file:
-- Output/evidence:
-- Date/time:
+- Run ID: see `task1_manifest.json` → run_id
+- Config file: `task1_llm/dipin/configs/task1_config.json`
+- Raw log: `reproducibility/raw_logs/dipin/task1_dipin_full_<timestamp>.jsonl`
+- Checkpoint: `task1_llm/dipin/checkpoints/model.pt` (final, reported); `best.pt` (lowest validation loss)
+- Metrics file: `task1_llm/dipin/metrics_report.csv`
+- Output/evidence: `task1_llm/dipin/outputs/` (loss curves, stability plot, generated samples, evaluation.json), executed notebook `task1_llm/dipin/src/task1_dipin.ipynb`
+- Date/time: in the raw log (first and last line)
 
 ---
 

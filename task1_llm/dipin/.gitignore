@@ -1,0 +1,5 @@
+# resume state is large; the final weights (model.pt / best.pt) are committed
+checkpoints/latest.pt
+checkpoints/latest.tmp
+checkpoints/smoke/
+outputs/smoke/
