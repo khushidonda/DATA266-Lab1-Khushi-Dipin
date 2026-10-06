@@ -1,9 +1,9 @@
 metric,value,notes
-training_cross_entropy_loss,0.8638971224,eval mode (dropout off), full train split (644854 sequences), primary checkpoint epoch_9
-validation_cross_entropy_loss,0.8642926901,eval mode, full validation split (64576 sequences), primary checkpoint epoch_9
+training_cross_entropy_loss,0.8638971224,"eval mode (dropout off), full train split (644854 sequences), primary checkpoint epoch_9"
+validation_cross_entropy_loss,0.8642926901,"eval mode, full validation split (64576 sequences), primary checkpoint epoch_9"
 perplexity,2.3733,validation; training perplexity = 2.3724
 bits_per_character,1.2469,validation; training bpc = 1.2463
-generalization_gap,0.0003956,validation_eval_ce - training_eval_ce (nats/char); near zero, no meaningful overfitting
+generalization_gap,0.0003956,"validation_eval_ce - training_eval_ce (nats/char); near zero, no meaningful overfitting"
 top1_next_character_accuracy,0.7275,validation (72.75%); training = 0.7276 (72.76%)
 distinct_1,0.0051,character-level (primary); word-level Distinct-1 = 0.2395 (secondary)
 distinct_2,0.0436,character-level (primary); word-level Distinct-2 = 0.6463 (secondary)
@@ -13,6 +13,6 @@ gradient_norm,0.4076,mean over all 100760 optimizer steps; range 0.1375-1.4374 (
 nan_count,0,zero NaN/Inf events over the full run (100760 steps)
 parameter_count,574830,from task1_config.json architecture (embedding_dim 128 / 4 heads / 4 blocks / feed_forward_dim 256)
 training_tokens_per_sec,307816.59,includes per-step gradient-norm computation and raw-log write overhead
-generation_tokens_per_sec,566.42,batch size 1, 50 samples x 200 new chars, CUDA-synchronized
+generation_tokens_per_sec,566.42,"batch size 1, 50 samples x 200 new chars, CUDA-synchronized"
 peak_memory_usage,465645568,peak GPU memory allocated in bytes (444.1 MiB); peak reserved = 503316480 bytes (480.0 MiB)
-total_training_time,2705.14,seconds, all 10 epochs, NVIDIA GeForce RTX 5090
+total_training_time,2705.14,"seconds, all 10 epochs, NVIDIA GeForce RTX 5090"

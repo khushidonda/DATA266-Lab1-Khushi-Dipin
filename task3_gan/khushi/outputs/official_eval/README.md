@@ -1,0 +1,5 @@
+# Official course evaluation of the epoch-29 checkpoint
+
+`epoch_029/Part3_Evaluation_Script_epoch029.ipynb` is the course-provided `Part3_Evaluation_Script.ipynb` (SHA-256 `702a1265433bf2f15c7900c83442c626d10ac0918094d093dde8ef82069d4cef`) executed once on the lab GPU machine on checkpoint `epoch_28.pt` (completed epoch 29). Only the four folder assignments in the configuration cell (real Monet, real photos, `pred_A2B`, `pred_B2A`) were changed; every other cell is identical to the original, which the run script checked before executing. `N_EVAL = 300`. Its `submission.csv` is the file submitted to the class competition.
+
+Path strings in this copy were redacted (machine-specific lab-machine user-directory prefixes replaced by `<HOME>`) so that no personal file paths remain in the repository. Code, parameters and numeric outputs are unchanged. SHA-256 of the notebook before this redaction: `2078f23b223134216b8094df793ad19f674fdc41066ac1c66a7fbf779c9b2092`; the unredacted original is retained in the GPU backup. The per-epoch `metrics.json` files under `../phase0/sweep/` received the same redaction.

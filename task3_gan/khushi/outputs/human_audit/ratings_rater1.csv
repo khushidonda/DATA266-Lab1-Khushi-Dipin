@@ -1,0 +1,31 @@
+sample_id,style_quality_1_to_5,content_preservation_1_to_5,artifact_severity_1_to_5,optional_notes
+S01,4,5,2,"Strong painterly conversion, structure preserved"
+S02,3,4,2,Style change visible but somewhat muddy
+S03,4,4,2,"Good realism shift, haystacks retained"
+S04,4,5,1,Bridge/scene preserved very cleanly
+S05,4,4,2,Convincing photo-like conversion
+S06,4,4,2,"Good palm structure, slight softness"
+S07,3,5,2,Content excellent; target style somewhat weak
+S08,3,5,2,"Architecture preserved, still somewhat painterly"
+S09,5,4,1,Very convincing Monet-like transformation
+S10,4,4,2,"Strong conversion, minor structural change"
+S11,3,3,3,Dark/blurred; some content degradation
+S12,5,5,1,Strong style + excellent scene preservation
+S13,5,5,1,"Excellent style transfer, composition retained"
+S14,4,4,3,"Good style, but visible texture/stripe artifacts"
+S15,4,4,2,"Good realism conversion, coast preserved"
+S16,5,4,2,"Strong painting style, slight detail loss"
+S17,4,5,2,Building geometry very well preserved
+S18,2,4,2,Limited target-style improvement
+S19,5,5,1,Very strong transformation with clean content
+S20,5,5,1,Excellent style and landscape preservation
+S21,4,5,1,Clean photo-like conversion
+S22,2,5,1,Content excellent but style conversion weak
+S23,5,5,1,Strong Monet-like appearance
+S24,4,5,1,"Good realism, excellent scene preservation"
+S25,5,5,1,"Strong painting conversion, content retained"
+S26,4,5,1,"Good realistic conversion, structures intact"
+S27,5,5,1,Excellent painterly conversion
+S28,3,5,2,"Content preserved, realism only moderate"
+S29,3,4,2,Strong visual change but not fully photographic
+S30,5,5,1,"Very convincing style, flowers preserved"

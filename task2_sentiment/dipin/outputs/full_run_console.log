@@ -5,7 +5,7 @@ At line:1 char:331
     + CategoryInfo          : NotSpecified: ([NbConvertApp] ...ynb to notebook:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
  
-C:\Users\khushi\DATA266-Lab1-Khushi-Dipin\task2_sentiment\dipin\.venv\Lib\site-packages\zmq\_future.py:718: 
+<HOME>\DATA266-Lab1-Khushi-Dipin\task2_sentiment\dipin\.venv\Lib\site-packages\zmq\_future.py:718: 
 RuntimeWarning: Proactor event loop does not implement add_reader family of methods required for zmq. Registering an 
 additional selector thread for add_reader support via tornado. Use 
 `asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())` to avoid this warning.

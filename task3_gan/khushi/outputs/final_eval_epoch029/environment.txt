@@ -1,0 +1,20 @@
+# Evaluation environment (final_eval_epoch029)
+OS: macOS 26.5.2 (arm64)
+Python: Python 3.11.16
+Device used for generation / features / LPIPS: cpu (torch.manual_seed(42), np seed 42)
+Training hardware (for reference, from raw log): NVIDIA GeForce RTX 4090, Windows 11 (see reproducibility/manifests/khushi/task3_preflight_rtx4090.md)
+
+## Key package versions
+lpips==0.1.4
+matplotlib==3.11.2
+numpy==2.4.6
+pandas==3.0.6
+pillow==12.3.0
+scikit-learn==1.9.1
+scipy==1.17.1
+torch==2.14.0
+torchvision==0.29.0
+
+## Pretrained weights used for MEASUREMENT only (never to produce images)
+Inception-v3 IMAGENET1K_V1 inception_v3_google-0cc3c7bd.pth sha256 0cc3c7bd75056d25e46cba549dc184522069b81e9787eff6df84f397bd52a5ef
+AlexNet IMAGENET1K_V1 alexnet-owt-7be5be79.pth sha256 7be5be791159472b1fbf3c69796f7cb30dca7ad8466c2df70058c37116cdee02 (LPIPS backbone; lpips 0.1.4 ships its own linear-layer weights)

@@ -1,0 +1,17 @@
+# Environment used for the final evaluation, notebooks and smoke test (CPU is sufficient for them).
+# Training of the reported models was done on NVIDIA RTX 4090 / 5090 lab machines; per-member requirements
+# files with the training stacks are in each member's task folder.
+torch>=2.6
+torchvision>=0.21
+numpy>=1.26
+scipy>=1.14
+pillow>=10.0
+pandas>=2.0
+matplotlib>=3.8
+scikit-learn>=1.3
+lpips>=0.1.4
+nltk>=3.8
+datasets>=2.18
+jupyter
+nbclient
+ipykernel

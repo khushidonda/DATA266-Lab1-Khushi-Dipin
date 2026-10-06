@@ -1,0 +1,22 @@
+{
+  "selected_completed_epoch": 29,
+  "global_step_at_selected_epoch": 204102,
+  "training_seconds_through_selected_epoch": 20946.12861275673,
+  "selected_epoch_images_per_second": 9.714176213061092,
+  "mean_images_per_second_epochs_1_to_29": 9.745826977245068,
+  "peak_memory_bytes_max_over_epochs_1_to_29": 2894273536,
+  "selected_epoch_means": {
+    "G_total": 3.4023680424581846,
+    "D_A": 0.11601313764907464,
+    "D_B": 0.1769681791710088,
+    "cycle_A": 0.07417052950335307,
+    "cycle_B": 0.09557474070922298,
+    "identity_A": 0.060660561054688804,
+    "identity_B": 0.07342844573650155,
+    "G_grad_norm": 19.631097173843084,
+    "D_A_grad_norm": 6.371204332040316,
+    "D_B_grad_norm": 5.273240489602249
+  },
+  "recorded_nan_inf_abort_events": 0,
+  "note": "the logger has no explicit NaN counter; training aborts on a non-finite loss/gradient and writes a nan_detected record, so 0 records = 0 recorded NaN/Inf abort events"
+}

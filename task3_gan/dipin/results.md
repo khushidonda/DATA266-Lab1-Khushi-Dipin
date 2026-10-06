@@ -124,12 +124,11 @@ The switch to v2 was the team's choice after comparing the two runs. By our pre-
 
 The class script uses torchvision's ImageNet Inception with 299-pixel resizing, so its FID differs from ours (94.9 / 88.1). Its "MiFID" is the mean cosine distance between index-paired features, not Kaggle's memorization-penalised FID.
 
-- Leaderboard public score: *pending (to be recorded after submission)*
-- Leaderboard private score: *pending*
-- Team rank: *pending*
+- Calculated class metric from `submission.csv`: -(FID + MiFID)/2 = -51.394 (v2); v1: -50.405.
+- No leaderboard record for this model is stored in the repository. The team's leaderboard entry (rank 29, score -49.5121 at the time of the screenshot) was produced by Khushi's Task 3 checkpoint; see `task3_gan/khushi/outputs/kaggle/`.
 
 ### Human audit
-30 fixed held-out samples (20 photo→Monet, 10 Monet→photo) have been shuffled under anonymous IDs in `outputs/human_audit/`. Each sample is rated 1–5 for style, content and artifacts by two independent raters. Results and inter-rater agreement (Cohen's κ, unweighted and quadratic, plus % exact and within-1 agreement) are computed by `human_audit.py score`. *Pending ratings.*
+30 fixed held-out samples (20 photo→Monet, 10 Monet→photo) have been shuffled under anonymous IDs in `outputs/human_audit/`. Each sample is rated 1–5 for style, content and artifacts by two independent raters. Results and inter-rater agreement (Cohen's κ, unweighted and quadratic, plus % exact and within-1 agreement) are computed by `human_audit.py score`. The rating sheets `ratings_rater1.csv` and `ratings_rater2.csv` have not been filled in, so no audit results are reported for this model.
 
 ## Observations
 1. **Convergence.** Cycle and identity losses fall steadily, with the fastest drop in the first 10 epochs and a second, smoother decline once the learning rate starts decaying at epoch 26. Held-out cycle L1 on the four fixed test images per domain falls from 0.25 at epoch 1 to 0.13–0.18 from epoch 15 on, and is noisy after that; four images is a small sample.

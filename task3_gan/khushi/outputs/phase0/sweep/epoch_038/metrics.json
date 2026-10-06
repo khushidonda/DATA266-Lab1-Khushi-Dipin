@@ -1,0 +1,52 @@
+{
+ "epoch": 38,
+ "checkpoint": "<HOME>\\DATA266-Lab1-Khushi-Dipin\\task3_gan\\khushi\\checkpoints\\task3_khushi_prod_20260930_154246\\epoch_37.pt",
+ "checkpoint_sha256": "d9c68bb747dd988bd99eb3efec5f28ccb5a64ba1b00d626155628f9f760e8523",
+ "fid_A2B": 97.6015104061608,
+ "fid_B2A": 100.91256792340965,
+ "mifid_A2B": 0.4175490736961365,
+ "mifid_B2A": 0.4055582284927368,
+ "sub_fid": 99.25703916478523,
+ "sub_mifid": 0.41155365109443665,
+ "n_eval": 300,
+ "evaluator_sha256": "702a1265433bf2f15c7900c83442c626d10ac0918094d093dde8ef82069d4cef",
+ "device": "cuda",
+ "proxies": {
+  "A2B": {
+   "input_output_l1": 0.10132427513599396,
+   "output_diversity_pixel_std": 0.23057787120342255,
+   "saturated_frac": 0.006658766004774306,
+   "nyquist_power_frac_gen": 0.0005253684357739985,
+   "nyquist_power_frac_real_target": 0.0002252512058475986,
+   "mean_rgb_gen": [
+    0.45809999108314514,
+    0.4512999951839447,
+    0.3894999921321869
+   ],
+   "mean_rgb_real_target": [
+    0.39809998869895935,
+    0.4002000093460083,
+    0.366100013256073
+   ]
+  },
+  "B2A": {
+   "input_output_l1": 0.11746291071176529,
+   "output_diversity_pixel_std": 0.2121206521987915,
+   "saturated_frac": 0.0005433146158854167,
+   "nyquist_power_frac_gen": 9.793862409424037e-05,
+   "nyquist_power_frac_real_target": 0.0001902472722576931,
+   "mean_rgb_gen": [
+    0.5063999891281128,
+    0.4821000099182129,
+    0.45190000534057617
+   ],
+   "mean_rgb_real_target": [
+    0.5248000025749207,
+    0.5293999910354614,
+    0.4740999937057495
+   ]
+  }
+ },
+ "generation_seconds": 5.466516494750977,
+ "total_seconds": 31.788039445877075
+}

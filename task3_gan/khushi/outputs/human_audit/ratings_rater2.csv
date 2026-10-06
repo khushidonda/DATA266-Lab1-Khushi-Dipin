@@ -1,0 +1,31 @@
+sample_id,style_quality_1_to_5,content_preservation_1_to_5,artifact_severity_1_to_5,optional_notes
+S01,4,4,2,"nice painterly look, bit of grid texture"
+S02,3,4,3,"added color, kind of noisy"
+S03,3,4,2,"too dark, haystacks ok"
+S04,4,5,1,"looks real, good"
+S05,4,4,2,"sky looks real, water still a bit painty"
+S06,3,4,2,"darker, trees still look painted"
+S07,3,4,3,"not much style, blotchy stream"
+S08,2,5,2,"very green, still looks like a painting"
+S09,2,2,4,"cloud turned into a blob, lots of texture"
+S10,4,5,1,"good, sky looks real"
+S11,2,3,3,"muddy, lost the tree detail"
+S12,4,4,2,good painting look
+S13,4,4,2,"good sky, red smudges at bottom"
+S14,2,2,4,"night sky ruined, streaks"
+S15,4,5,1,"looks real, good"
+S16,3,4,3,"colorful ground, grid in sky"
+S17,3,4,3,noisy sky
+S18,1,5,1,basically unchanged
+S19,3,4,3,"green tint, grid texture"
+S20,2,2,4,"washed out, smeared"
+S21,4,5,1,"clean snow, good"
+S22,2,5,1,almost no change
+S23,3,4,4,"tree turned brown, checkerboard sky"
+S24,3,5,2,"more realistic, some brushwork left"
+S25,2,3,4,streaky sky
+S26,3,5,2,"brighter, people still look painted"
+S27,2,3,4,"washed out, grid all over"
+S28,3,5,2,"sky good, building still painterly"
+S29,4,4,2,looks real but colors changed to orange
+S30,3,5,3,"flowers fine, grainy texture"

@@ -1,36 +1,71 @@
-direction,metric,value,notes
-A2B,FID,94.9070995327636,"untranslated baseline 126.80; n_fake=500, n_real=300"
-A2B,KID,0.014295192561461079,std 0.0021 over 100 subsets; baseline 0.0489
-A2B,generative_precision,0.364,"Kynkaanniemi 2019, k=3, Inception pool3"
-A2B,generative_recall,0.55,"Kynkaanniemi 2019, k=3"
-A2B,density,0.41479999999999995,"Naeem 2020, k=5"
-A2B,coverage,0.8066666666666666,"Naeem 2020, k=5"
-A2B,cycle_reconstruction_L1,0.04619867727160454,"[0,1] pixel scale, held-out n=500; PSNR 24.92 dB"
-A2B,LPIPS,0.37153857946395874,AlexNet LPIPS input vs translation; input vs reconstruction 0.1577
-A2B,content_preservation_cosine_similarity,0.7572732444592759,"Inception pool3 features, input vs translation"
-A2B,MiFID_estimate,94.9070995327636,Kaggle-style; memorization distance 0.2453
-B2A,FID,88.10818777640924,"untranslated baseline 126.80; n_fake=300, n_real=500"
-B2A,KID,0.016703325256067228,std 0.0024 over 100 subsets; baseline 0.0493
-B2A,generative_precision,0.67,"Kynkaanniemi 2019, k=3, Inception pool3"
-B2A,generative_recall,0.338,"Kynkaanniemi 2019, k=3"
-B2A,density,0.8453333333333333,"Naeem 2020, k=5"
-B2A,coverage,0.72,"Naeem 2020, k=5"
-B2A,cycle_reconstruction_L1,0.06034887582063675,"[0,1] pixel scale, held-out n=30; PSNR 22.98 dB"
-B2A,LPIPS,0.2634534537792206,AlexNet LPIPS input vs translation; input vs reconstruction 0.2325
-B2A,content_preservation_cosine_similarity,0.830649854748242,"Inception pool3 features, input vs translation"
-B2A,MiFID_estimate,88.10818777640924,Kaggle-style; memorization distance 0.2340
-overall,generator_loss,2.9428575919673348,"final-epoch mean, total = adv + 10*cyc + 5*id"
-overall,generator_adversarial_loss,1.2484312011561263,"final-epoch mean, sum of both directions"
-overall,discriminator_loss,0.11223317398618485,"final-epoch mean; D_A 0.1612, D_B 0.0633"
-overall,cycle_consistency_loss,0.12643264836036466,"final-epoch mean, unweighted L1 sum of both cycles, [-1,1] scale"
-overall,identity_loss,0.08601998143148713,"final-epoch mean, unweighted L1 sum of both directions"
-overall,gradient_norm,18.67319833131376,final-epoch mean G norm; D 7.580; max G over run 41.81
-overall,nan_count,0,non-finite loss/grad steps (skipped)
-overall,human_audit_score,,pending ratings
-overall,inter_rater_agreement,,pending ratings
-overall,parameter_count,28273544,"G_AB 11372931, G_BA 11372931, D_A 2763841, D_B 2763841"
-overall,training_time,2.606,hours on NVIDIA GeForce RTX 4090; 81750 steps x batch 4
-overall,images_per_sec,34.85,training (paired A+B sample per image); inference A2B 350.7 img/s
-overall,peak_memory_usage,4.879,"GB, torch.cuda.max_memory_allocated during training"
-overall,kaggle_public_score,,"pending - submission.csv from v2 (checkpoints/v2, epoch 50); class-script FID 102.39 / MiFID 0.4016; all other rows describe v1 unless noted"
-overall,kaggle_private_score,,"pending - submission.csv from v2 (checkpoints/v2, epoch 50); class-script FID 102.39 / MiFID 0.4016; all other rows describe v1 unless noted"
+model_version,direction,metric,value,notes
+v1,photo->Monet,FID,94.9070995327636,500 held-out test photos translated vs 300 real Monet; untranslated baseline 126.80; Inception pool3
+v1,photo->Monet,KID,0.014295192561461079,std 0.0021 over 100 subsets of 100; untranslated baseline 0.0489
+v1,photo->Monet,generative_precision,0.364,"Kynkaanniemi 2019, k=3"
+v1,photo->Monet,generative_recall,0.55,"Kynkaanniemi 2019, k=3"
+v1,photo->Monet,density,0.41479999999999995,"Naeem 2020, k=5"
+v1,photo->Monet,coverage,0.8066666666666666,"Naeem 2020, k=5"
+v1,photo->Monet,cycle_reconstruction_L1,0.04619867727160454,"[0,1] pixel scale; PSNR 24.92 dB"
+v1,photo->Monet,LPIPS_input_vs_translation,0.37153857946395874,AlexNet LPIPS
+v1,photo->Monet,LPIPS_input_vs_cycle_reconstruction,0.15767043828964233,AlexNet LPIPS
+v1,photo->Monet,content_preservation_cosine_similarity,0.7572732444592759,"Inception pool3 features, input vs translation"
+v1,Monet->photo,FID,88.10818777640924,300 Monet translated vs 500 held-out test photos (per-image metrics: 30 held-out Monet); untranslated baseline 126.80; Inception pool3
+v1,Monet->photo,KID,0.016703325256067228,std 0.0024 over 100 subsets of 100; untranslated baseline 0.0493
+v1,Monet->photo,generative_precision,0.67,"Kynkaanniemi 2019, k=3"
+v1,Monet->photo,generative_recall,0.338,"Kynkaanniemi 2019, k=3"
+v1,Monet->photo,density,0.8453333333333333,"Naeem 2020, k=5"
+v1,Monet->photo,coverage,0.72,"Naeem 2020, k=5"
+v1,Monet->photo,cycle_reconstruction_L1,0.06034887582063675,"[0,1] pixel scale; PSNR 22.98 dB"
+v1,Monet->photo,LPIPS_input_vs_translation,0.2634534537792206,AlexNet LPIPS
+v1,Monet->photo,LPIPS_input_vs_cycle_reconstruction,0.2324971705675125,AlexNet LPIPS
+v1,Monet->photo,content_preservation_cosine_similarity,0.830649854748242,"Inception pool3 features, input vs translation"
+v1,overall,generator_loss,2.9428575919673348,"final-epoch mean, total = adv + lambda_cyc*cyc + lambda_id*id"
+v1,overall,discriminator_loss,0.11223317398618485,"final-epoch mean; D_A 0.1612, D_B 0.0633"
+v1,overall,cycle_consistency_loss,0.12643264836036466,"final-epoch mean, unweighted L1 sum of both cycles, [-1,1] scale"
+v1,overall,identity_loss,0.08601998143148713,"final-epoch mean, unweighted L1 sum of both directions"
+v1,overall,gradient_norm_G,18.67319833131376,final-epoch mean; D 7.580
+v1,overall,nan_count,0,non-finite loss/grad steps over the run
+v1,overall,parameter_count,28273544,"G_AB 11372931, G_BA 11372931, D_A 2763841, D_B 2763841"
+v1,overall,training_time_hours,2.6061611590120526,81750 steps x batch 4 on NVIDIA GeForce RTX 4090
+v1,overall,images_per_sec,34.853306373335165,training; one paired photo+Monet sample per image
+v1,overall,peak_memory_gb,4.878934860229492,torch.cuda.max_memory_allocated during training
+v1,overall,class_evaluator_FID,100.40533422712198,course evaluator (N_EVAL=300) on predictions from the checkpoints/ generators; mean of both directions
+v1,overall,class_evaluator_MiFID,0.4053732752799988,"course evaluator MiFID, mean of both directions"
+v1,overall,class_competition_metric,-50.40535375120099,"-(FID+MiFID)/2 computed from the two rows above; a calculated value, not a leaderboard record"
+v2,photo->Monet,FID,92.0328039174567,500 held-out test photos translated vs 300 real Monet; untranslated baseline 126.80; Inception pool3
+v2,photo->Monet,KID,0.017514061200586836,std 0.0020 over 100 subsets of 100; untranslated baseline 0.0489
+v2,photo->Monet,generative_precision,0.428,"Kynkaanniemi 2019, k=3"
+v2,photo->Monet,generative_recall,0.49666666666666665,"Kynkaanniemi 2019, k=3"
+v2,photo->Monet,density,0.45,"Naeem 2020, k=5"
+v2,photo->Monet,coverage,0.7866666666666666,"Naeem 2020, k=5"
+v2,photo->Monet,cycle_reconstruction_L1,0.04970945045351982,"[0,1] pixel scale; PSNR 23.96 dB"
+v2,photo->Monet,LPIPS_input_vs_translation,0.416848748922348,AlexNet LPIPS
+v2,photo->Monet,LPIPS_input_vs_cycle_reconstruction,0.25792285799980164,AlexNet LPIPS
+v2,photo->Monet,content_preservation_cosine_similarity,0.7517530453770441,"Inception pool3 features, input vs translation"
+v2,Monet->photo,FID,95.49332397843904,300 Monet translated vs 500 held-out test photos (per-image metrics: 30 held-out Monet); untranslated baseline 126.80; Inception pool3
+v2,Monet->photo,KID,0.02598220618969731,std 0.0032 over 100 subsets of 100; untranslated baseline 0.0493
+v2,Monet->photo,generative_precision,0.5966666666666667,"Kynkaanniemi 2019, k=3"
+v2,Monet->photo,generative_recall,0.292,"Kynkaanniemi 2019, k=3"
+v2,Monet->photo,density,0.734,"Naeem 2020, k=5"
+v2,Monet->photo,coverage,0.63,"Naeem 2020, k=5"
+v2,Monet->photo,cycle_reconstruction_L1,0.06121142581105232,"[0,1] pixel scale; PSNR 22.52 dB"
+v2,Monet->photo,LPIPS_input_vs_translation,0.30640849471092224,AlexNet LPIPS
+v2,Monet->photo,LPIPS_input_vs_cycle_reconstruction,0.3805101215839386,AlexNet LPIPS
+v2,Monet->photo,content_preservation_cosine_similarity,0.800553417328177,"Inception pool3 features, input vs translation"
+v2,overall,generator_loss,2.6445056940072904,"final-epoch mean, total = adv + lambda_cyc*cyc + lambda_id*id"
+v2,overall,discriminator_loss,0.1415676429184205,"final-epoch mean; D_A 0.1659, D_B 0.1172"
+v2,overall,cycle_consistency_loss,0.1357351860914391,"final-epoch mean, unweighted L1 sum of both cycles, [-1,1] scale"
+v2,overall,identity_loss,0.1765254128872437,"final-epoch mean, unweighted L1 sum of both directions"
+v2,overall,gradient_norm_G,36.524445759192886,final-epoch mean; D 6.678
+v2,overall,nan_count,0,non-finite loss/grad steps over the run
+v2,overall,parameter_count,28273544,"G_AB 11372931, G_BA 11372931, D_A 2763841, D_B 2763841"
+v2,overall,training_time_hours,3.4413909938600327,81750 steps x batch 4 on NVIDIA GeForce RTX 4090
+v2,overall,images_per_sec,26.394365968700992,training; one paired photo+Monet sample per image
+v2,overall,peak_memory_gb,6.604156970977783,torch.cuda.max_memory_allocated during training
+v2,overall,class_evaluator_FID,102.38558632624284,course evaluator (N_EVAL=300) on predictions from the checkpoints/v2/ generators; mean of both directions
+v2,overall,class_evaluator_MiFID,0.4015621691942215,"course evaluator MiFID, mean of both directions"
+v2,overall,class_competition_metric,-51.39357424771853,"-(FID+MiFID)/2 computed from the two rows above; a calculated value, not a leaderboard record"
+v1,overall,human_audit_score,,no ratings recorded for this version (rating sheets in outputs/human_audit/ are blank)
+v1,overall,inter_rater_agreement,,no ratings recorded for this version
+v2,overall,human_audit_score,,no ratings recorded for this version (rating sheets in outputs/human_audit/ are blank)
+v2,overall,inter_rater_agreement,,no ratings recorded for this version

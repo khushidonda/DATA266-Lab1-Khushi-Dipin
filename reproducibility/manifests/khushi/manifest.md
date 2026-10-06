@@ -38,9 +38,9 @@ Environment file:
 #### Code
 | Purpose | Commit / hash |
 |---|---|
-| Training code used by the run (`model.py`, `train.py`, `run_task1.py`) | `e2160c24d8c7bd05bc0bb99864d42da60326de8a`; the run recorded `git_worktree_dirty = false` |
-| Evaluation and plotting code that produced `metrics.json`, the generations and the curves | `234cfc250ea13612b19ec20dd566fe718462182e`; `metrics.json` records `eval_script_sha256 = 30e3f5c85f755f4269876f67bd8b92f114052debf718d8c6d87f9a3ab9543f2d` |
-| Presentation-only fixes used afterwards to re-render `training_dynamics.png` and rebuild `failure_candidates.md` (no metric changes) | not committed yet: `evaluate_task1.py` SHA-256 `2bc614ddb33f8721413117fd36ec313930e3ac66ace8319bd710fcc75968b556`, `plot_task1_curves.py` SHA-256 `ff3babc9e0dfd8b5a81ece3469836f49cbf9b740e6c7cfbda8ab1e15fddbe446` |
+| Training code used by the run (`model.py`, `train.py`, `run_task1.py`) | `e2160c24d8c7bd05bc0bb99864d42da60326de8a` as recorded by the run (`git_worktree_dirty = false`); that commit id is not in the published history, and the identical files (same SHA-256 values as in the Inputs table below) are in commit `4aeab18` |
+| Evaluation and plotting code that produced `metrics.json`, the generations and the curves | `234cfc250ea13612b19ec20dd566fe718462182e` as recorded; the identical script is in commit `cc59595`; `metrics.json` records `eval_script_sha256 = 30e3f5c85f755f4269876f67bd8b92f114052debf718d8c6d87f9a3ab9543f2d` |
+| Presentation-only fixes used afterwards to re-render `training_dynamics.png` and rebuild `failure_candidates.md` (no metric changes) | committed in `86e116d` (both files match the versions in the repository): `evaluate_task1.py` SHA-256 `2bc614ddb33f8721413117fd36ec313930e3ac66ace8319bd710fcc75968b556`, `plot_task1_curves.py` SHA-256 `ff3babc9e0dfd8b5a81ece3469836f49cbf9b740e6c7cfbda8ab1e15fddbe446` |
 
 #### Environment
 - Base image: `pytorch/pytorch:2.14.0-cuda13.0-cudnn9-runtime@sha256:9c99fafa01edfaa3d16da8c209b38b5970bb6fd6e72725ef60efc901489f70c6`
@@ -91,7 +91,7 @@ Seed 42 for random, NumPy and PyTorch (CPU and CUDA); 10 epochs × 10,076 steps 
 
 Generation protocol: prompts "Once upon a time", "One day,", "Lily and Ben", "The little bird", "Tom was sad because"; 10 samples each (50 in total), 200 new characters, temperature 0.8, sampling seed 42.
 
-#### All epoch checkpoints (`task1_llm/khushi/checkpoints/task1_full_20260925_204011/`, 7,049,223 bytes each)
+#### All epoch checkpoints (7,049,223 bytes each; `epoch_9.pt` is committed at `task1_llm/khushi/checkpoints/task1_full_20260925_204011/`, epochs 0-8 are retained in the local backup and verified by the SHA-256 values below)
 | Epoch | Logged validation CE | SHA-256 |
 |---|---|---|
 | 0 | 1.0431043364 | `36e0b1aebfbcb71b3f5b1c61dadcaf406ecc4743a3ef52c3c7cedf22f52c8203` |
@@ -142,38 +142,30 @@ python evaluate_task1.py --run-id task1_full_20260925_204011 --rebuild-candidate
 
 ## Task 2 — Sentiment Classification
 
-### Baseline
-- Run ID:
-- Config file:
-- Raw log:
-- Checkpoint:
-- Metrics/evidence:
-
-### Experimental Model 1
-- Run ID:
-- Config file:
-- Raw log:
-- Checkpoint:
-- Metrics/evidence:
-
-### Experimental Model 2
-- Run ID:
-- Config file:
-- Raw log:
-- Checkpoint:
-- Metrics/evidence:
+Task 2 was led by Dipin. Its run IDs, configuration, raw logs, checkpoints and metric mapping are recorded in
+`reproducibility/manifests/dipin/task2_manifest.json` and `reproducibility/manifests/dipin/manifest.md`.
 
 ---
 
-## Task 3 — CycleGAN
+## Task 3 — CycleGAN (Khushi)
+
+Full checkpoint → result chain: `reproducibility/manifests/khushi/task3_checkpoint_result_map.md`.
+
+### System / Hardware (training)
+- NVIDIA GeForce RTX 4090 (24,564 MiB, compute capability 8.9), AMD Ryzen 9 7950X, Windows 11 Pro, native (no Docker); FP32.
+- Python 3.12.10, PyTorch 2.14.1+cu126, torchvision 0.29.1+cu126, CUDA 12.6, cuDNN 9.10.02 (from `task3_preflight_rtx4090.md`, same lab-machine setup as the production run).
 
 ### Final Run
-- Run ID:
-- Config file:
-- Raw log:
-- Checkpoint(s):
-- Generated outputs:
-- Evaluation file:
-- Kaggle submission:
-- Metrics/evidence:
-- Date/time:
+- Run ID: `task3_khushi_prod_20260930_154246` (staged: epochs 1-5, then resumed from `epoch_4.pt` as `task3_khushi_prod_20260930_154246_resumed_20260930_164230` through epoch 40)
+- Config file: `task3_gan/khushi/configs/task3_config.json`
+- Raw logs (unedited): `reproducibility/raw_logs/khushi/task3_khushi_prod_20260930_154246.jsonl`, `reproducibility/raw_logs/khushi/task3_khushi_prod_20260930_154246_resumed_20260930_164230.jsonl` (+ the console log of the first segment)
+- Training code: repository HEAD when the run started was `c6cda9e` (backup `git_head.txt`); the run log does not itself record the commit. Later commits only add an optional discriminator learning-rate key and a `--config` switch, which do not change the baseline run.
+- Selected checkpoint: `task3_gan/khushi/checkpoints/task3_khushi_prod_20260930_154246/epoch_28.pt` (checkpoint file `epoch_28.pt` corresponds to completed epoch 29 under zero-based naming), 339,592,307 bytes, SHA-256 `d3124ab24a6f2201a03673cde5a416d04c78dd44985a3c7d590c48efc7e89d3c`, global step 204,102. Not tracked in Git (size); distributed with the Canvas package. The `checkpoint_saved` record in the resumed raw log carries the same SHA-256.
+- Generated outputs: `task3_gan/khushi/outputs/final_eval_epoch029/pred_A2B/`, `pred_B2A/` (300 JPEG q95 each); sample grid `task3_gan/khushi/outputs/samples/samples_epoch029.png`
+- Checkpoint-selection sweep (completed epochs 25-40, JPEG; epoch 29 PNG): `task3_gan/khushi/outputs/phase0/phase0_summary.csv`
+- Official evaluation: `task3_gan/khushi/outputs/official_eval/epoch_029/Part3_Evaluation_Script_epoch029.ipynb` (course notebook, SHA-256 `702a1265433bf2f15c7900c83442c626d10ac0918094d093dde8ef82069d4cef`, only the four folder paths changed), `outputs/phase0/sweep/epoch_029/metrics.json`
+- Metrics files: `task3_gan/khushi/full_metrics_report.csv`, `metrics_report.csv`, `outputs/final_eval_epoch029/metrics_final.json`, `outputs/plots/training_epoch_metrics.csv`
+- Human audit: `task3_gan/khushi/outputs/human_audit/` (two completed rater sheets, `agreement_results.json`, `human_audit_summary.csv`)
+- Kaggle submission: `task3_gan/khushi/outputs/submission.csv`; leaderboard screenshot `task3_gan/khushi/outputs/kaggle/kaggle_leaderboard_rank29_score_-49.5121.png`
+- Evaluation environment: `task3_gan/khushi/outputs/final_eval_epoch029/environment.txt` (Python 3.11.16, torch 2.14.0, torchvision 0.29.0, lpips 0.1.4, CPU)
+- Date/time: training 2026-09-30 15:42 PDT to 2026-09-30 23:47 PDT (epochs 1-40); epoch-29 checkpoint saved 2026-09-30 21:32 PDT

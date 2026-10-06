@@ -49,3 +49,8 @@ DATA266_CRITICAL_UPLOAD/
 .venv/
 venv/
 env/
+
+# Reproducible caches and local scratch (final evaluation features can be regenerated with evaluate_final.py)
+task3_gan/khushi/outputs/final_eval_epoch029/cache/
+**/.ipynb_checkpoints/
+**/.venv/

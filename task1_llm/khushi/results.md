@@ -70,6 +70,7 @@ See `metrics_report.csv` in this folder for the same values in flat form.
   character Distinct-1/2/3 = 0.0051 / 0.0436 / 0.1592; character repeated-4-gram rate = 0.1309 (primary
   diversity metrics); word Distinct-1/2/3 = 0.2395 / 0.6463 / 0.8569; word repeated-4-gram rate = 0.0020
   (secondary diagnostics).
+- **Gradient norm** (global L2, no clipping, all 100,760 steps): mean 0.4076, median 0.4133, 99th percentile 0.4636, maximum 1.4374 (step 126, during warm-up).
 - **Throughput / resources:** training 307,817 tokens/sec; generation 566.4 tokens/sec (batch size 1);
   peak GPU memory 444.1 MiB allocated / 480.0 MiB reserved; 0 NaN/Inf events over the full run.
 
@@ -109,8 +110,8 @@ Loss curves: `task1_llm/khushi/outputs/task1_full_20260925_204011/curves/loss_cu
 - Very small train-validation evaluation gap, indicating little evidence of overfitting on this split.
 - Manual causal Transformer successfully learned strong character-level next-token structure while
   remaining compact at 574,830 parameters.
-- Reproducible run with deterministic seed, fixed split, raw step-level logging, checkpoint hashing,
-  and recorded environment information.
+- Seeded run with a fixed split, raw step-level logging, checkpoint hashing, and recorded
+  environment information.
 
 **Limitations**
 - Sequence length 128 restricts how much story context the model can condition on at once.
