@@ -52,9 +52,12 @@ for v, (base, log) in RUNS.items():
     add(v, "overall", "class_evaluator_FID", f_, f"course evaluator (N_EVAL=300) on predictions from the {ck.rsplit('/', 1)[0]}/ generators; mean of both directions")
     add(v, "overall", "class_evaluator_MiFID", m_, "course evaluator MiFID, mean of both directions")
     add(v, "overall", "class_competition_metric", -(f_ + m_) / 2, "-(FID+MiFID)/2 computed from the two rows above; a calculated value, not a leaderboard record")
-for v in RUNS:
-    add(v, "overall", "human_audit_score", None, "no ratings recorded for this version (rating sheets in outputs/human_audit/ are blank)")
-    add(v, "overall", "inter_rater_agreement", None, "no ratings recorded for this version")
+audit = json.load(open(D / "outputs/human_audit/audit_summary.json"))
+HAP = "30 held-out samples (20 photo->Monet, 10 Monet->photo) from the v1 translations, blinded, 2 independent raters, 1-5 higher is better (artifacts: 5 = no visible artifacts)"
+for c, a in audit["criteria"].items():
+    add("v1", "overall", f"human_audit_{c}", a["combined_mean"], f"{HAP}; combined SD {a['combined_sd']:.3f}; rater1 {a['rater1_mean']:.3f}, rater2 {a['rater2_mean']:.3f}")
+    add("v1", "overall", f"inter_rater_quadratic_kappa_{c}", a["quadratic_weighted_kappa"], f"quadratic-weighted Cohen's kappa; exact agreement {a['exact_agreement_pct']:.1f}%; mean absolute difference {a['mean_abs_difference']:.3f}")
+add("v2", "overall", "human_audit_score", None, "the audit panels were exported from the v1 held-out translations; no v2 audit was run")
 with open(D / "metrics_report.csv", "w", newline="") as f:
     w = csv.writer(f); w.writerow(["model_version", "direction", "metric", "value", "notes"]); w.writerows(rows)
 print(len(rows), "rows")

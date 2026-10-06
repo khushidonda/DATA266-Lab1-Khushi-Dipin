@@ -65,7 +65,10 @@ v2,overall,peak_memory_gb,6.604156970977783,torch.cuda.max_memory_allocated duri
 v2,overall,class_evaluator_FID,102.38558632624284,course evaluator (N_EVAL=300) on predictions from the checkpoints/v2/ generators; mean of both directions
 v2,overall,class_evaluator_MiFID,0.4015621691942215,"course evaluator MiFID, mean of both directions"
 v2,overall,class_competition_metric,-51.39357424771853,"-(FID+MiFID)/2 computed from the two rows above; a calculated value, not a leaderboard record"
-v1,overall,human_audit_score,,no ratings recorded for this version (rating sheets in outputs/human_audit/ are blank)
-v1,overall,inter_rater_agreement,,no ratings recorded for this version
-v2,overall,human_audit_score,,no ratings recorded for this version (rating sheets in outputs/human_audit/ are blank)
-v2,overall,inter_rater_agreement,,no ratings recorded for this version
+v1,overall,human_audit_style,3.566666666666667,"30 held-out samples (20 photo->Monet, 10 Monet->photo) from the v1 translations, blinded, 2 independent raters, 1-5 higher is better (artifacts: 5 = no visible artifacts); combined SD 0.767; rater1 3.800, rater2 3.333"
+v1,overall,inter_rater_quadratic_kappa_style,0.5789473684210527,quadratic-weighted Cohen's kappa; exact agreement 56.7%; mean absolute difference 0.467
+v1,overall,human_audit_content,4.433333333333334,"30 held-out samples (20 photo->Monet, 10 Monet->photo) from the v1 translations, blinded, 2 independent raters, 1-5 higher is better (artifacts: 5 = no visible artifacts); combined SD 0.621; rater1 4.667, rater2 4.200"
+v1,overall,inter_rater_quadratic_kappa_content,0.46153846153846156,quadratic-weighted Cohen's kappa; exact agreement 53.3%; mean absolute difference 0.467
+v1,overall,human_audit_artifacts,3.35,"30 held-out samples (20 photo->Monet, 10 Monet->photo) from the v1 translations, blinded, 2 independent raters, 1-5 higher is better (artifacts: 5 = no visible artifacts); combined SD 0.936; rater1 3.733, rater2 2.967"
+v1,overall,inter_rater_quadratic_kappa_artifacts,0.4211686879823594,quadratic-weighted Cohen's kappa; exact agreement 43.3%; mean absolute difference 0.767
+v2,overall,human_audit_score,,the audit panels were exported from the v1 held-out translations; no v2 audit was run

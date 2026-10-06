@@ -1,0 +1,40 @@
+{
+  "n_samples": 30,
+  "raters": 2,
+  "scale": "1-5, higher is better (artifacts: 5 = no visible artifacts)",
+  "criteria": {
+    "style": {
+      "rater1_mean": 3.8,
+      "rater1_sd": 0.5508613944197479,
+      "rater2_mean": 3.3333333333333335,
+      "rater2_sd": 0.8840866447369843,
+      "combined_mean": 3.566666666666667,
+      "combined_sd": 0.7672682483797639,
+      "quadratic_weighted_kappa": 0.5789473684210527,
+      "exact_agreement_pct": 56.666666666666664,
+      "mean_abs_difference": 0.4666666666666667
+    },
+    "content": {
+      "rater1_mean": 4.666666666666667,
+      "rater1_sd": 0.5466722735905339,
+      "rater2_mean": 4.2,
+      "rater2_sd": 0.6102571532587294,
+      "combined_mean": 4.433333333333334,
+      "combined_sd": 0.6207340287621397,
+      "quadratic_weighted_kappa": 0.46153846153846156,
+      "exact_agreement_pct": 53.333333333333336,
+      "mean_abs_difference": 0.4666666666666667
+    },
+    "artifacts": {
+      "rater1_mean": 3.7333333333333334,
+      "rater1_sd": 0.6396838299494921,
+      "rater2_mean": 2.966666666666667,
+      "rater2_sd": 1.0333518722845685,
+      "combined_mean": 3.35,
+      "combined_sd": 0.9356408118576056,
+      "quadratic_weighted_kappa": 0.4211686879823594,
+      "exact_agreement_pct": 43.333333333333336,
+      "mean_abs_difference": 0.7666666666666667
+    }
+  }
+}

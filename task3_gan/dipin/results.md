@@ -128,7 +128,15 @@ The class script uses torchvision's ImageNet Inception with 299-pixel resizing, 
 - No leaderboard record for this model is stored in the repository. The team's leaderboard entry (rank 29, score -49.5121 at the time of the screenshot) was produced by Khushi's Task 3 checkpoint; see `task3_gan/khushi/outputs/kaggle/`.
 
 ### Human audit
-30 fixed held-out samples (20 photo→Monet, 10 Monet→photo) have been shuffled under anonymous IDs in `outputs/human_audit/`. Each sample is rated 1–5 for style, content and artifacts by two independent raters. Results and inter-rater agreement (Cohen's κ, unweighted and quadratic, plus % exact and within-1 agreement) are computed by `human_audit.py score`. The rating sheets `ratings_rater1.csv` and `ratings_rater2.csv` have not been filled in, so no audit results are reported for this model.
+30 fixed held-out samples (20 photo→Monet, 10 Monet→photo) from the v1 translations were shuffled under anonymous IDs (`outputs/human_audit/`) and rated 1–5 for style, content and artifacts (artifacts: 5 = no visible artifacts) by two independent raters (`ratings_rater1.csv`, `ratings_rater2.csv`). Summary: `outputs/human_audit/audit_summary.json` and `audit_summary.csv`, produced by `src/human_audit_summary.py` (the id-to-image key is not stored in the repository, so per-direction means are not reported).
+
+| Criterion (1-5, higher is better) | Rater 1 | Rater 2 | Combined (mean ± SD) | Quadratic-weighted kappa | Exact agreement | Mean abs. difference |
+|---|---|---|---|---|---|---|
+| Style | 3.80 ± 0.55 | 3.33 ± 0.88 | 3.57 ± 0.77 | 0.579 | 56.7% | 0.47 |
+| Content preservation | 4.67 ± 0.55 | 4.20 ± 0.61 | 4.43 ± 0.62 | 0.462 | 53.3% | 0.47 |
+| Artifacts (5 = none) | 3.73 ± 0.64 | 2.97 ± 1.03 | 3.35 ± 0.94 | 0.421 | 43.3% | 0.77 |
+
+Both raters judged content preservation highest. Agreement is moderate (quadratic-weighted kappa 0.42 to 0.58); rater 2 scored style and artifacts lower than rater 1. Rater 2's notes name the same recurring problems as the failure analysis: streak, hatch and grid textures in skies, blotches, and outputs that stay close to the input painting.
 
 ## Observations
 1. **Convergence.** Cycle and identity losses fall steadily, with the fastest drop in the first 10 epochs and a second, smoother decline once the learning rate starts decaying at epoch 26. Held-out cycle L1 on the four fixed test images per domain falls from 0.25 at epoch 1 to 0.13–0.18 from epoch 15 on, and is noisy after that; four images is a small sample.

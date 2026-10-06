@@ -34,7 +34,7 @@ The datasets are intentionally **not** committed to this repository.
 
 * **Task 1 — TinyStories** (`roneneldan/TinyStories`, revision `f54c09fd23315a6f9c86f9dc80f725de7d8f9c64`): downloaded automatically by `datasets`; the train/validation story split is committed (`task1_llm/khushi/data_processed/split_indices.json`).
 * **Task 2 — Yelp Polarity** (`fancyzhx/yelp_polarity`): downloaded automatically on first use; NLTK stopwords/WordNet data are fetched automatically.
-* **Task 3 — Monet and photo images** (Kaggle competition "I'm Something of a Painter Myself", `gan-getting-started`): 300 Monet and 7,038 photographs, JPEG, RGB, 256 x 256. Place them as
+* **Task 3 — Monet and photo images** (Kaggle competition "I'm Something of a Painter Myself", `gan-getting-started`): 300 Monet and 7,038 photographs, JPEG, RGB, 256 x 256. The exact dataset used for all reported results is shared as `dataset.zip` on Google Drive (read access): <https://drive.google.com/file/d/1Iui28XutAKWixdb8AhMWVWO-6GbZf6QH/view?usp=sharing>. Unzip it and place the images as
 
   ```
   task3_gan/data/monet_jpg/   (300 files)

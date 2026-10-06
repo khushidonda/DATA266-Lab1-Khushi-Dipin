@@ -281,9 +281,9 @@ Notes. KID is an unbiased MMD² with a polynomial kernel (degree 3), mean ± sta
 
 **Khushi, additional measurements.** LPIPS between input and direct translation (supplementary, since style change is intended): 0.368 (Monet to photo) and 0.390 (photo to Monet). Cycle L1 overall 0.0467 and LPIPS cycle overall 0.2165.
 
-## 4.4 Human audit (Khushi's model)
+## 4.4 Human audits
 
-Thirty samples (15 Monet to photo, 15 photo to Monet) were drawn at random with seed 42 from the fixed evaluation set, shuffled, and shown as blinded input | translation panels. Two raters scored each sample independently on a 1 to 5 scale for style quality, content preservation and artifact severity (1 = no visible artifacts, 5 = severe).
+**Khushi's model.** Thirty samples (15 Monet to photo, 15 photo to Monet) were drawn at random with seed 42 from the fixed evaluation set, shuffled, and shown as blinded input | translation panels. Two raters scored each sample independently on a 1 to 5 scale for style quality, content preservation and artifact severity (1 = no visible artifacts, 5 = severe).
 
 | Criterion | Rater 1 | Rater 2 | Combined (mean ± SD) | Quadratic-weighted kappa | Exact agreement | Mean absolute difference |
 |---|---|---|---|---|---|---|
@@ -292,6 +292,16 @@ Thirty samples (15 Monet to photo, 15 photo to Monet) were drawn at random with 
 | Artifact severity (lower is better) | 1.60 ± 0.62 | 2.43 ± 1.04 | 2.02 ± 0.95 | −0.025 | 36.7% | 1.03 |
 
 Both raters judged content preservation better than style conversion. Inter-rater agreement is low (kappa 0.13, 0.18 and −0.03), so the combined means blend two rating scales and should not be read as a precise consensus. The raters differed most on photo-to-Monet artifacts (rater 1: 1.47, rater 2: 3.20 averaged over the 15 samples) and agreed on Monet to photo (1.73 and 1.67).
+
+**Dipin's model (v1 baseline held-out translations).** The same procedure was applied to 30 blinded held-out translations (20 photo to Monet, 10 Monet to photo) from the v1 baseline, rated by two independent raters on a 1 to 5 scale where higher is better for every criterion, including artifacts (5 = no visible artifacts; note that this is the opposite direction from the artifact scale used for Khushi's audit above).
+
+| Criterion (higher is better, artifacts: 5 = none) | Rater 1 | Rater 2 | Combined (mean ± SD) | Quadratic-weighted kappa | Exact agreement | Mean absolute difference |
+|---|---|---|---|---|---|---|
+| Style quality | 3.80 ± 0.55 | 3.33 ± 0.88 | 3.57 ± 0.77 | 0.579 | 56.7% | 0.47 |
+| Content preservation | 4.67 ± 0.55 | 4.20 ± 0.61 | 4.43 ± 0.62 | 0.462 | 53.3% | 0.47 |
+| Artifacts (5 = none) | 3.73 ± 0.64 | 2.97 ± 1.03 | 3.35 ± 0.94 | 0.421 | 43.3% | 0.77 |
+
+Content preservation is again rated highest. Agreement is moderate (kappa 0.42 to 0.58), and rater 2 scored style and artifacts lower than rater 1. Rater 2's notes name streak, hatch and grid textures in skies, blotches, and outputs that stay close to the input painting, matching the failure modes in section 4.8. The audit panels were exported from the v1 translations, so these ratings describe the baseline run.
 
 ## 4.5 Kaggle class competition
 
@@ -338,7 +348,7 @@ Khushi's model converts photographs into soft, painterly images with Monet-like 
 
 *Strengths.* Both models learn the two mappings and preserve scene content (content cosine 0.75 to 0.83, cycle L1 0.04 to 0.06) without any NaN event. Khushi's model has the best course-evaluator result (average FID 98.61, class metric −49.512) among the three, and the lowest KID in both directions on its fixed in-domain set; Dipin's v2 has the best photo-to-Monet FID under the course evaluator (99.90) and on the held-out photos used in Dipin's protocol (92.03) and the lowest average MiFID (0.4016), at higher training cost than v1.
 
-*Weaknesses and limitations.* The two sets of per-metric numbers use different evaluation sets (in-domain 300 + 300 versus held-out photos), so the ranking by FID, KID, precision and recall between members must be read with that difference in mind; for Khushi the checkpoint was also selected on the evaluation set. With 300 images per set FID is biased and the KID subset standard deviation (0.002 to 0.003) is not small relative to the differences between directions. In Khushi's model FID and KID rank the directions differently (FID lower for Monet to photo, KID lower for photo to Monet), and precision and recall are asymmetric (0.717 / 0.390 for Monet to photo, 0.400 / 0.613 for photo to Monet); this is a descriptive reading of 300-image comparisons and does not establish a mode-coverage difference. Khushi's training stopped at epoch 40 of a planned 200 and never reached the learning-rate decay phase. The human audit has two raters, 30 samples and low agreement.
+*Weaknesses and limitations.* The two sets of per-metric numbers use different evaluation sets (in-domain 300 + 300 versus held-out photos), so the ranking by FID, KID, precision and recall between members must be read with that difference in mind; for Khushi the checkpoint was also selected on the evaluation set. With 300 images per set FID is biased and the KID subset standard deviation (0.002 to 0.003) is not small relative to the differences between directions. In Khushi's model FID and KID rank the directions differently (FID lower for Monet to photo, KID lower for photo to Monet), and precision and recall are asymmetric (0.717 / 0.390 for Monet to photo, 0.400 / 0.613 for photo to Monet); this is a descriptive reading of 300-image comparisons and does not establish a mode-coverage difference. Khushi's training stopped at epoch 40 of a planned 200 and never reached the learning-rate decay phase. Each human audit has two raters and 30 samples; agreement is low for Khushi's audit (kappa −0.03 to 0.18) and moderate for Dipin's (0.42 to 0.58), and the two audits use opposite artifact scales.
 
 *Next steps.* Evaluate all models on a common held-out set with the same code; replace transposed convolutions by resize-convolutions in Khushi's generator while keeping a smoothness or perceptual term; use DiffAugment on the Monet discriminator only (the photo critic has 6,538 real images) with a moderate identity weight; and extend Khushi's training into the decay phase.
 
