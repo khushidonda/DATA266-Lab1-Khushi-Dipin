@@ -52,3 +52,5 @@ Two runs with the same data split (seed 266, `task3_gan/dipin/data_processed/spl
 | Metrics file | `task3_gan/dipin/metrics_report.csv` (both versions, one `model_version` column) | same file |
 
 The generator hashes equal the `generator_sha256` values in each `predictions_info.json`, which ties the class-evaluator predictions to these checkpoints. Notebooks: `task3_gan/dipin/src/task3_dipin.ipynb` (analysis), `task3_gan/dipin/Part3_Evaluation_Script.ipynb` (class evaluator, v2).
+
+Human audit (30 blinded held-out samples from the v1 translations, 2 independent raters; artifacts: 5 = no visible artifacts): sheets `task3_gan/dipin/outputs/human_audit/ratings_rater1.csv` and `ratings_rater2.csv`, summary `audit_summary.json` / `audit_summary.csv` produced by `task3_gan/dipin/src/human_audit_summary.py`; the audit rows of `metrics_report.csv` are built from it by `task3_gan/dipin/src/build_metrics_report.py`. The executed analysis notebook `task3_gan/dipin/src/task3_dipin.ipynb` displays the same summary.
