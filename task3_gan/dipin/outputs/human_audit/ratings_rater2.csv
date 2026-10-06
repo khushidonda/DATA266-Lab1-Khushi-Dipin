@@ -1,31 +1,31 @@
 sample_id,style,content,artifacts,notes
-S01,,,,
-S02,,,,
-S03,,,,
-S04,,,,
-S05,,,,
-S06,,,,
-S07,,,,
-S08,,,,
-S09,,,,
-S10,,,,
-S11,,,,
-S12,,,,
-S13,,,,
-S14,,,,
-S15,,,,
-S16,,,,
-S17,,,,
-S18,,,,
-S19,,,,
-S20,,,,
-S21,,,,
-S22,,,,
-S23,,,,
-S24,,,,
-S25,,,,
-S26,,,,
-S27,,,,
-S28,,,,
-S29,,,,
-S30,,,,
+S01,4,5,3,"painterly sky and ground, structure intact; streak texture in sky, blotchy ground"
+S02,4,4,2,"pastel look; heavy streak texture, vertical bands at left edge, brown blotch top right"
+S03,4,4,3,"pastel, pier turned orange; horizon light smeared; speckle in foreground"
+S04,3,5,2,"mountains painted well; sky has horizontal banding and hatch texture"
+S05,4,4,2,"impressionist colours on hillside; clear grid pattern across sky, red blotch on rocks"
+S06,2,5,4,colours muted toward photo tones but still clearly a painting; clean
+S07,2,4,4,"darker and greyer, brushwork remains; smoke and red roofs faded"
+S08,1,5,5,"almost unchanged; still a painting"
+S09,4,4,3,"painterly cliffs and forest; dusk sky turned pale; hatch texture in sky"
+S10,2,5,5,"slightly desaturated copy of the painting; no artifacts"
+S11,3,3,3,"photo-like stormy sky and lighting; mood changed, beach darkened; streak lines on cliff, blown-out sail"
+S12,3,4,2,"some painterly colour; rainbow speckle and grid noise in the dark water"
+S13,4,4,2,"pastel palette, dark rocks recoloured; horizontal weave texture across sky"
+S14,4,4,4,"reads like a dusk photo silhouette; hill detail lost to darkness; mostly clean"
+S15,4,4,2,"strong pastel look; vertical streaks across sky, clouds lost"
+S16,2,3,1,"blocky grid pattern dominates the image; aurora shape only roughly kept"
+S17,4,4,2,"pastel sky and meadow; grid texture in sky, brown blotch in top-right corner"
+S18,4,4,3,"vivid painterly sky; dark areas turned mottled green; watermark smeared"
+S19,4,5,4,"soft painterly harbour, everything preserved; minor noise on water highlights"
+S20,4,5,4,"warm painterly sky; boardwalk and tents intact; slight mottling"
+S21,4,4,2,"pastel hillside; strong grid across sky, red blotch under sun"
+S22,4,4,4,"sky and foliage look photographic; red flowers mostly lost; clean"
+S23,2,4,3,"toned down but still a painting; muddy dark blotches on right bank"
+S24,3,4,2,"skyline kept; sky turned mottled yellow-green with grid noise"
+S25,4,5,3,"pastel painting look, person kept; hatch pattern on jacket, banding at top"
+S26,3,3,3,"photo-like lighting; sea became a dark field, town on horizon gone; halo around tree"
+S27,3,5,4,"mild tint, still close to a photo; all detail kept; small orange patches"
+S28,4,4,2,"strong palette change; heavy hatching and bands in sky"
+S29,3,4,4,"sky and trees photographic, road and cliff still painted; clean"
+S30,4,4,2,"pastel look; vertical streak curtain above the horizon"
