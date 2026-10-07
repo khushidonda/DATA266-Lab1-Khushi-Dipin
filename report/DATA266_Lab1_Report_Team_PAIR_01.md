@@ -23,7 +23,7 @@ header-includes:
 
 **GitHub repository:** <https://github.com/khushidonda/DATA266-Lab1-Khushi-Dipin>
 
-**Team ownership.** Khushi led Task 1, Dipin led Task 2, and both team members independently developed and evaluated models for Task 3.
+**Team ownership.** Team PAIR_01 jointly prepared the final evaluation, comparative analysis, and report. Individual implementation provenance is preserved in the repository's named member folders, manifests, raw logs, checkpoints, and Git history; both team members independently implemented and evaluated Task 3.
 
 # 1. Summary
 
@@ -33,7 +33,7 @@ header-includes:
 | 2. Yelp Polarity sentiment | 1-layer LSTM, 2-layer BiLSTM, BiLSTM + attention (about 8.2 to 8.8 M parameters each) | test accuracy 0.9518 / 0.9531 / 0.9533, macro-F1 0.9518 / 0.9531 / 0.9533 |
 | 3. CycleGAN, Monet and photo | Khushi: ResNet-9 CycleGAN, 28.29 M parameters. Dipin: ResNet-9 CycleGAN, 28.27 M parameters, two versions | course evaluator average FID 98.61 (Khushi), 102.39 (Dipin v2), 100.41 (Dipin v1); team leaderboard rank 29, score $-49.5121$ |
 
-Every number in this report is read from an artifact in the repository; section 6 maps results to files, checkpoints and SHA-256 values. Statistical statements are stated with their sample sizes, and evaluation protocols are named wherever they differ between models.
+All reported experimental results are traceable to supporting artifacts in the repository; section 6 maps results to files, checkpoints and SHA-256 values. Statistical statements are stated with their sample sizes, and evaluation protocols are named wherever they differ between models.
 
 # 2. Task 1 — GPT-style language model from scratch
 
@@ -43,7 +43,7 @@ The task is next-character prediction with a decoder-only Transformer implemente
 
 ## 2.2 Architecture and hyperparameters
 
-The model follows the pre-layer-norm GPT design (Vaswani et al., 2017): a trainable token embedding (110 x 128) plus a learned positional embedding (128 x 128), four Transformer blocks and a final layer norm with a linear language-modelling head. Each block applies `x = x + Attn(LN(x))` and `x = x + FFN(LN(x))`. Multi-head causal self-attention is written by hand: separate query, key, value and output projections, scaled dot-product scores, a lower-triangular mask applied with `masked_fill(-inf)` before the softmax, and a manual head split and merge. The feed-forward layer is Linear(128, 256), GELU, Linear(256, 128).
+The model is a decoder-only Transformer derived from the Transformer architecture (Vaswani et al., 2017), implemented with pre-layer normalization. It consists of a trainable token embedding (110 x 128) plus a learned positional embedding (128 x 128), four Transformer blocks and a final layer norm with a linear language-modelling head. Each block applies `x = x + Attn(LN(x))` and `x = x + FFN(LN(x))`. Multi-head causal self-attention is written by hand: separate query, key, value and output projections, scaled dot-product scores, a lower-triangular mask applied with `masked_fill(-inf)` before the softmax, and a manual head split and merge. The feed-forward layer is Linear(128, 256), GELU, Linear(256, 128).
 
 | Item | Value |
 |---|---|
@@ -186,7 +186,7 @@ Experimental 2 has the best overall metrics but the highest error on the truncat
 
 ## 3.4 Error review (experimental 2)
 
-Experimental 2 misclassifies 1,774 of 38,000 reviews (4.67%). Twenty errors were selected automatically (not by hand): the 5 most confident false positives, the 5 most confident false negatives, the 5 errors closest to $P=0.5$ and the 5 most confident errors in the worst slice (high unknown rate). Each was labelled with an error type (`task2_sentiment/dipin/failure_analysis.md`, candidates in `outputs/error_review/error_candidates_experimental_2.csv`).
+Experimental 2 misclassifies 1,774 of 38,000 reviews (4.67%). Twenty errors were programmatically selected into the four required categories and then manually reviewed, assigned an error type, and analyzed for a testable fix: the 5 most confident false positives, the 5 most confident false negatives, the 5 errors closest to $P=0.5$ and the 5 most confident errors in the worst slice (high unknown rate). The review is in `task2_sentiment/dipin/failure_analysis.md`; the candidates are in `outputs/error_review/error_candidates_experimental_2.csv`.
 
 | Error type | Count | Example (test index) |
 |---|---|---|
@@ -275,9 +275,13 @@ Because the evaluation sets differ, the per-metric values from the two members' 
 | Throughput (paired photo + Monet samples per second) | 9.71 | 26.39 | 34.85 |
 | Peak GPU memory | 2.70 GiB | 6.60 GB | 4.88 GB |
 | NaN / Inf events | 0 | 0 | 0 |
-| Final-epoch generator loss / mean discriminator loss | 3.402 / 0.147 | 2.645 / 0.142 | 2.943 / 0.112 |
+| Generator loss / mean discriminator loss (epoch mean) | 3.402 / 0.147 | 2.645 / 0.142 | 2.943 / 0.112 |
+| Cycle loss, unweighted L1 summed over both cycles (epoch mean) | 0.170 (0.074 + 0.096) | 0.136 | 0.126 |
+| Identity loss, unweighted L1 summed over both directions (epoch mean) | 0.134 (0.061 + 0.073) | 0.177 | 0.086 |
+| Generator gradient norm, both generators (epoch mean) | 19.63 | 36.52 | 18.67 |
+| Discriminator gradient norm (epoch mean) | D_A 6.37, D_B 5.27 (separate) | 6.68 (D_A and D_B combined) | 7.58 (combined) |
 
-Notes. KID is an unbiased MMD² with a polynomial kernel (degree 3), mean ± standard deviation over 100 subsets of 100 images (Khushi: seed 42, 300 vs 300 images; Dipin: the held-out protocol). Precision and recall use k-nearest-neighbour manifolds with k = 3 (Kynkaanniemi et al., 2019); density and coverage use k = 5 (Naeem et al., 2020). Cycle L1 is on a [0, 1] pixel scale, computed on raw tensors before JPEG encoding. LPIPS uses the AlexNet backbone (Zhang et al., 2018). Khushi's final-epoch loss values are for completed epoch 29. The Kaggle-style class metric is calculated from the course evaluator's FID and MiFID values for each model.
+Notes. KID is an unbiased MMD² with a polynomial kernel (degree 3), mean ± standard deviation over 100 subsets of 100 images (Khushi: seed 42, 300 vs 300 images; Dipin: the held-out protocol). Precision and recall use k-nearest-neighbour manifolds with k = 3 (Kynkaanniemi et al., 2019); density and coverage use k = 5 (Naeem et al., 2020). Cycle L1 is on a [0, 1] pixel scale, computed on raw tensors before JPEG encoding. LPIPS uses the AlexNet backbone (Zhang et al., 2018). Training losses and gradient norms are epoch means from the raw logs: completed epoch 29 for Khushi (the selected checkpoint) and the final epoch 50 for Dipin; losses are on the [-1, 1] pixel scale. The generator loss weights identity differently (5 for Khushi and Dipin v1, 1 for Dipin v2), and gradient norms are measured per optimizer step at batch size 1 (Khushi) and 4 (Dipin), so these rows describe each run's own training rather than a like-for-like ranking. The Kaggle-style class metric is calculated from the course evaluator's FID and MiFID values for each model.
 
 **Khushi, additional measurements.** LPIPS between input and direct translation (supplementary, since style change is intended): 0.368 (Monet to photo) and 0.390 (photo to Monet). Cycle L1 overall 0.0467 and LPIPS cycle overall 0.2165.
 
@@ -291,9 +295,9 @@ Notes. KID is an unbiased MMD² with a polynomial kernel (degree 3), mean ± sta
 | Content preservation (higher is better) | 4.57 ± 0.57 | 4.07 ± 0.94 | 4.32 ± 0.81 | 0.181 | 50.0% | 0.70 |
 | Artifact severity (lower is better) | 1.60 ± 0.62 | 2.43 ± 1.04 | 2.02 ± 0.95 | −0.025 | 36.7% | 1.03 |
 
-Both raters judged content preservation better than style conversion. Inter-rater agreement is low (kappa 0.13, 0.18 and −0.03), so the combined means blend two rating scales and should not be read as a precise consensus. The raters differed most on photo-to-Monet artifacts (rater 1: 1.47, rater 2: 3.20 averaged over the 15 samples) and agreed on Monet to photo (1.73 and 1.67).
+Both raters judged content preservation better than style conversion. Inter-rater agreement is low (kappa 0.13, 0.18 and −0.03), so the combined means combine two raters with substantially different calibration and should not be interpreted as a precise consensus. The raters differed most on photo-to-Monet artifacts (rater 1: 1.47, rater 2: 3.20 averaged over the 15 samples) and agreed on Monet to photo (1.73 and 1.67).
 
-**Dipin's model (v1 baseline held-out translations).** The same procedure was applied to 30 blinded held-out translations (20 photo to Monet, 10 Monet to photo) from the v1 baseline, rated by two independent raters on a 1 to 5 scale where higher is better for every criterion, including artifacts (5 = no visible artifacts; note that this is the opposite direction from the artifact scale used for Khushi's audit above).
+**Dipin's model (v1 baseline held-out translations).** An analogous blinded audit was applied to 30 held-out translations (20 photo to Monet, 10 Monet to photo) from the v1 baseline, rated by two independent raters on a 1 to 5 scale where higher is better for every criterion, including artifacts (5 = no visible artifacts; note that this is the opposite direction from the artifact scale used for Khushi's audit above).
 
 | Criterion (higher is better, artifacts: 5 = none) | Rater 1 | Rater 2 | Combined (mean ± SD) | Quadratic-weighted kappa | Exact agreement | Mean absolute difference |
 |---|---|---|---|---|---|---|
@@ -301,7 +305,7 @@ Both raters judged content preservation better than style conversion. Inter-rate
 | Content preservation | 4.67 ± 0.55 | 4.20 ± 0.61 | 4.43 ± 0.62 | 0.462 | 53.3% | 0.47 |
 | Artifacts (5 = none) | 3.73 ± 0.64 | 2.97 ± 1.03 | 3.35 ± 0.94 | 0.421 | 43.3% | 0.77 |
 
-Content preservation is again rated highest. Agreement is moderate (kappa 0.42 to 0.58), and rater 2 scored style and artifacts lower than rater 1. Rater 2's notes name streak, hatch and grid textures in skies, blotches, and outputs that stay close to the input painting, matching the failure modes in section 4.8. The audit panels were exported from the v1 translations, so these ratings describe the baseline run.
+Content preservation is again rated highest. Agreement is moderate (kappa 0.42 to 0.58), and rater 2 scored style and artifacts lower than rater 1. Rater 2's notes name streak, hatch and grid textures in skies, blotches, and outputs that stay close to the input painting, matching the failure modes in section 4.8. Dipin's blinded human audit evaluates the v1 baseline translations; quantitative v1 and v2 results are reported separately.
 
 ## 4.5 Kaggle class competition
 
@@ -342,7 +346,7 @@ Khushi's model converts photographs into soft, painterly images with Monet-like 
 * *Partial style conversion (S18, Monet to photo).* An abstract, heavily textured painting is translated into an output close to the input; content preservation is rated 4 and 5 and style conversion 2 and 1.
 * *Rater disagreement on artifacts* (above) means that artifact scores for photo to Monet differ by 1.7 points between raters.
 
-**Dipin** (`task3_gan/dipin/failure_analysis.md`, v1 held-out photos selected automatically by lowest content cosine, highest cycle L1 and highest LPIPS). Low-texture scenes such as salt flats and plain skies have the highest cycle error (up to 0.242 against a median of 0.042) and receive hallucinated texture; saturated sunsets change colour yet reconstruct almost perfectly, showing that a low cycle loss alone does not prove a faithful translation (the "steganography" effect of Chu et al., 2017); letterbox borders and flat-sky streak or checkerboard patterns are further failure modes. The v2 run removed the checkerboard grids but introduced blob artifacts and the fixed yellow corner mark.
+**Dipin** (`task3_gan/dipin/failure_analysis.md`, v1 held-out photos selected programmatically by lowest content cosine, highest cycle L1 and highest LPIPS, then inspected visually). Low-texture scenes such as salt flats and plain skies have the highest cycle error (up to 0.242 against a median of 0.042) and receive hallucinated texture; saturated sunsets change colour yet reconstruct almost perfectly, showing that a low cycle loss alone does not prove a faithful translation (the "steganography" effect of Chu et al., 2017); letterbox borders and flat-sky streak or checkerboard patterns are further failure modes. The v2 run removed the checkerboard grids but introduced blob artifacts and the fixed yellow corner mark.
 
 ## 4.9 Joint analysis
 
@@ -350,11 +354,11 @@ Khushi's model converts photographs into soft, painterly images with Monet-like 
 
 *Weaknesses and limitations.* The two sets of per-metric numbers use different evaluation sets (in-domain 300 + 300 versus held-out photos), so the ranking by FID, KID, precision and recall between members must be read with that difference in mind; for Khushi the checkpoint was also selected on the evaluation set. With 300 images per set FID is biased and the KID subset standard deviation (0.002 to 0.003) is not small relative to the differences between directions. In Khushi's model FID and KID rank the directions differently (FID lower for Monet to photo, KID lower for photo to Monet), and precision and recall are asymmetric (0.717 / 0.390 for Monet to photo, 0.400 / 0.613 for photo to Monet); this is a descriptive reading of 300-image comparisons and does not establish a mode-coverage difference. Khushi's training stopped at epoch 40 of a planned 200 and never reached the learning-rate decay phase. Each human audit has two raters and 30 samples; agreement is low for Khushi's audit (kappa −0.03 to 0.18) and moderate for Dipin's (0.42 to 0.58), and the two audits use opposite artifact scales.
 
-*Next steps.* Evaluate all models on a common held-out set with the same code; replace transposed convolutions by resize-convolutions in Khushi's generator while keeping a smoothness or perceptual term; use DiffAugment on the Monet discriminator only (the photo critic has 6,538 real images) with a moderate identity weight; and extend Khushi's training into the decay phase.
+*Next steps.* Evaluate all models on a common held-out set with the same code; replace transposed convolutions by resize-convolutions in Khushi's generator while using a course-permitted smoothness or regularization term; use DiffAugment on the Monet discriminator only (the photo critic has 6,538 real images) with a moderate identity weight; and extend Khushi's training into the decay phase.
 
 # 5. Cross-task synthesis
 
-Across the three tasks the same pattern appears: aggregate metrics improve with model capacity or training tricks, but the gains are small relative to their measurement uncertainty, and the informative evidence comes from failure analysis. In Task 1 evaluation-mode cross-entropy shows no overfitting while generated text still repeats templates and loses coherence. In Task 2 a McNemar test shows the 0.15 point accuracy gain of the BiLSTM with attention is not significant (p = 0.060 to 0.082 against the baseline), and the errors are dominated by mixed reviews, label noise and preprocessing choices. In Task 3 distribution metrics computed on 300 images have material uncertainty, differ between FID and KID, and cannot replace inspection of artifacts and the human audit. For all tasks the repository stores checkpoints, raw logs, manifests with SHA-256 values and the executed notebooks, so every table above can be regenerated or checked (section 6).
+Across Tasks 2 and 3, additional model complexity or training modifications produced relatively small or mixed aggregate changes: in Task 2 the gains are within statistical noise, and in Task 3 Dipin's v2 improved photo-to-Monet FID but not the two-direction average. Task 1 showed a related distinction between strong aggregate metrics and weaker qualitative behavior. In each task the more informative evidence comes from failure analysis. In Task 1, evaluation-mode cross-entropy shows no overfitting while generated text still repeats templates and loses coherence. In Task 2, the accuracy gains of the two BiLSTM models (0.13 and 0.15 points) are not significant by McNemar's test (p = 0.082 and 0.060 against the baseline), and the reviewed errors are concentrated in mixed reviews, text the model cannot read, and label noise. In Task 3, distribution metrics computed on 300 images have material uncertainty, rank the directions differently under FID and KID, and do not replace inspection of artifacts and the human audits. For all tasks the repository stores checkpoints, raw logs, manifests with SHA-256 values and the executed notebooks, so the tables above can be checked against their sources (section 6).
 
 # 6. Reproducibility and evidence
 
